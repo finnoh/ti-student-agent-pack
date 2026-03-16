@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # TI Student Agent Pack Installer
 # Usage: curl -sL https://raw.githubusercontent.com/finnoh/ti-student-agent-pack/main/install.sh | bash
+# Installer version: 2026-03-16-tty-prompt
 
 set -euo pipefail
 
