@@ -136,3 +136,40 @@ print_success "  python tools/submit_exercise.py --from-markdown work/E1.md"
 print_success "  python tools/progress_dashboard.py"
 print_success "  python tools/ask_course.py --q \"Your question here\""
 print_success ""
+
+# Offer to install OpenCode
+print_info "=== Coding Agent Setup ==="
+print_info ""
+print_info "To work on exercises, you'll need a coding agent. Options include:"
+print_info ""
+print_info "1. OpenCode (recommended for this workshop):"
+print_info "   curl -fsSL https://opencode.ai/install | bash"
+print_info ""
+print_info "2. VS Code with GitHub Copilot"
+print_info ""
+print_info "3. Cursor (VS Code-based AI editor)"
+print_info ""
+print_info "4. Claude Code / Codex (CLI tools)"
+print_info ""
+print_info "Would you like to install OpenCode now? (y/N)"
+read -r response
+if [[ "$response" =~ ^[Yy]$ ]]; then
+    print_info "Installing OpenCode..."
+    if curl -fsSL https://opencode.ai/install | bash; then
+        print_success "OpenCode installed successfully!"
+        print_info "You can now run: opencode"
+    else
+        print_warning "OpenCode installation failed. You can install it later using:"
+        print_warning "  curl -fsSL https://opencode.ai/install | bash"
+    fi
+else
+    print_info "You can install OpenCode later using:"
+    print_info "  curl -fsSL https://opencode.ai/install | bash"
+fi
+
+print_success ""
+print_success "=== Ready to Start ==="
+print_success ""
+print_success "Your student agent pack is ready!"
+print_success "Open this folder in your coding agent and start working on exercises."
+print_success ""
