@@ -35,7 +35,6 @@ This will:
 - **Submission tools** - Python scripts for submitting exercises
 - **TIA coaching agent** (`AGENTS.md`) - Your friendly AI tutor
 - **Progress dashboard** - Track your exercise completion
-- **ASCII art** (`TIA-ascii-art.txt`) - TIA's custom artwork
 - **Course Q&A tool** - Ask questions about course materials
 
 ## Next Steps
@@ -48,10 +47,9 @@ This will:
 ## TIA - Your AI Tutor
 
 TIA (Tinbergen Institute AI) is your friendly coaching agent. 
-When you open TIA, it will display custom ASCII art from `TIA-ascii-art.txt`.
+When you open TIA, it guides you through exercises with concise step-by-step coaching.
 
 ## More Information
 
 - Full documentation: See `AGENTS.md`
-- ASCII art options: See `TIA-ascii-art.txt`
 - Workshop materials: Visit [Tinbergen Institute Workshop Site](https://finnoh.github.io/ws_genai_eb/)
