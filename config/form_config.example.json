@@ -1,0 +1,9 @@
+{
+  "google_form_url": "https://docs.google.com/forms/d/e/<FORM_ID>/viewform?usp=pp_url",
+  "google_sheet_id": "<SPREADSHEET_ID_FOR_CODE_FALLBACK>",
+  "field_ids": {
+    "exercise_id": "1111111111",
+    "student_name": "2222222222",
+    "answer": "3333333333"
+  }
+}
