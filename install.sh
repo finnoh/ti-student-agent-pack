@@ -30,39 +30,41 @@ esac
 
 print_info "Detected OS: $OS"
 
-# Find and extract the zip file
-ZIP_FILE=""
-if [ -f "student-agent-pack.zip" ]; then
-    ZIP_FILE="student-agent-pack.zip"
-elif [ -f "ti-student-agent-pack.zip" ]; then
-    ZIP_FILE="ti-student-agent-pack.zip"
-elif [ -f "ti-student-agent-pack-latest.zip" ]; then
-    ZIP_FILE="ti-student-agent-pack-latest.zip"
+# Check if we're already in an extracted directory (has tools/ and work/ folders)
+if [ -d "tools" ] && [ -d "work" ]; then
+    print_info "Already in extracted directory, skipping extraction..."
 else
-    # Look for any .zip file in the current directory
-    for f in *.zip; do
-        if [ -f "$f" ]; then
-            ZIP_FILE="$f"
-            break
-        fi
-    done
-fi
-
-if [ -n "$ZIP_FILE" ]; then
-    print_info "Extracting $ZIP_FILE..."
-    if command -v unzip &> /dev/null; then
-        unzip -q "$ZIP_FILE"
+    # Find and extract the zip file
+    ZIP_FILE=""
+    if [ -f "student-agent-pack.zip" ]; then
+        ZIP_FILE="student-agent-pack.zip"
+    elif [ -f "ti-student-agent-pack.zip" ]; then
+        ZIP_FILE="ti-student-agent-pack.zip"
+    elif [ -f "ti-student-agent-pack-latest.zip" ]; then
+        ZIP_FILE="ti-student-agent-pack-latest.zip"
     else
-        print_error "unzip command not found. Please install unzip and rerun."
+        # Look for any .zip file in the current directory
+        for f in *.zip; do
+            if [ -f "$f" ]; then
+                ZIP_FILE="$f"
+                break
+            fi
+        done
+    fi
+
+    if [ -n "$ZIP_FILE" ]; then
+        print_info "Extracting $ZIP_FILE..."
+        if command -v unzip &> /dev/null; then
+            unzip -q "$ZIP_FILE"
+        else
+            print_error "unzip command not found. Please install unzip and rerun."
+            exit 1
+        fi
+    else
+        print_error "Could not find student-agent-pack directory or zip file"
+        print_error "Please download the zip file first or ensure you're in the correct directory"
         exit 1
     fi
-elif [ -d "student-agent-pack" ]; then
-    print_warning "Using existing student-agent-pack directory..."
-    cd student-agent-pack
-else
-    print_error "Could not find student-agent-pack directory or zip file"
-    print_error "Please download the zip file first or ensure you're in the correct directory"
-    exit 1
 fi
 
 # Check for Python
