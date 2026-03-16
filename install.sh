@@ -34,28 +34,25 @@ print_info "Detected OS: $OS"
 if [ -d "tools" ] && [ -d "work" ]; then
     print_info "Already in extracted directory, skipping extraction..."
 else
-    # Find and extract the zip file
+    # Find and extract the zip file - ONLY look for specific known zip filenames
     ZIP_FILE=""
-    if [ -f "student-agent-pack.zip" ]; then
-        ZIP_FILE="student-agent-pack.zip"
-    elif [ -f "ti-student-agent-pack.zip" ]; then
-        ZIP_FILE="ti-student-agent-pack.zip"
-    elif [ -f "ti-student-agent-pack-latest.zip" ]; then
-        ZIP_FILE="ti-student-agent-pack-latest.zip"
-    else
-        # Look for any .zip file in the current directory
-        for f in *.zip; do
+    
+    # List of known zip file patterns (in order of preference)
+    for pattern in "ti-student-agent-pack-latest.zip" "ti-student-agent-pack-*.zip" "student-agent-pack.zip"; do
+        for f in $pattern; do
             if [ -f "$f" ]; then
                 ZIP_FILE="$f"
-                break
+                break 2
             fi
         done
-    fi
-
+    done
+    
     if [ -n "$ZIP_FILE" ]; then
-        print_info "Extracting $ZIP_FILE..."
+        print_info "Found zip file: $ZIP_FILE"
+        print_info "Extracting..."
         if command -v unzip &> /dev/null; then
             unzip -q "$ZIP_FILE"
+            print_success "Extraction complete"
         else
             print_error "unzip command not found. Please install unzip and rerun."
             exit 1
@@ -64,7 +61,7 @@ else
         print_error "Could not find student-agent-pack directory or zip file"
         print_error ""
         print_error "This script must be run from the student-agent-pack directory"
-        print_error "or in a directory containing a zip file."
+        print_error "or in a directory containing the zip file."
         print_error ""
         print_error "To install:"
         print_error "1. Download the zip file from:"
