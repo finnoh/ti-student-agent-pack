@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # TI Student Agent Pack Installer
 # Usage: curl -sL https://raw.githubusercontent.com/finnoh/ti-student-agent-pack/main/install.sh | bash
-# Or: curl -sL https://raw.githubusercontent.com/finnoh/ti-student-agent-pack/main/install.sh | bash -s -- --help
 
 set -euo pipefail
 
@@ -14,24 +13,10 @@ NC='\033[0m'
 
 print_info() { echo -e "${BLUE}[INFO]${NC} $1"; }
 print_success() { echo -e "${GREEN}[SUCCESS]${NC} $1"; }
+print_warning() { echo -e "${YELLOW}[WARNING]${NC} $1"; }
 print_error() { echo -e "${RED}[ERROR]${NC} $1"; }
 
-# Show usage
-if [[ "${1:-}" == "--help" ]]; then
-    echo "TI Student Agent Pack Installer"
-    echo ""
-    echo "Usage:"
-    echo "  curl -sL https://raw.githubusercontent.com/finnoh/ti-student-agent-pack/main/install.sh | bash"
-    echo ""
-    echo "This will:"
-    echo "  1. Clone the repository to the current directory"
-    echo "  2. Set up the environment"
-    echo "  3. Optionally install OpenCode"
-    exit 0
-fi
-
 print_info "=== TI Student Agent Pack Installer ==="
-print_info "Cloning repository from GitHub..."
 
 # Check if git is available
 if ! command -v git &> /dev/null; then
@@ -49,7 +34,7 @@ if [ -d "$TARGET_DIR" ]; then
     exit 1
 fi
 
-# Clone the repository
+print_info "Cloning repository from GitHub..."
 if git clone "$REPO_URL" "$TARGET_DIR"; then
     print_success "Repository cloned successfully"
 else
@@ -71,7 +56,7 @@ elif command -v python &> /dev/null; then
     PYTHON_VERSION=$(python -V 2>&1 | cut -d' ' -f2)
     print_info "Found Python $PYTHON_VERSION"
 else
-    print_error "Python not found. Please install Python 3.8+ and rerun this script."
+    print_error "Python not found. Please install Python 3.8+"
     exit 1
 fi
 
@@ -83,18 +68,6 @@ if [ "$PYTHON_MAJOR" -lt 3 ] || ([ "$PYTHON_MAJOR" -eq 3 ] && [ "$PYTHON_MINOR" 
     exit 1
 fi
 
-# Run startup check
-print_info "Running startup check..."
-if [ -f "tools/startup_check.py" ]; then
-    if $PYTHON_CMD tools/startup_check.py; then
-        print_success "Startup check passed"
-    else
-        print_warning "Some startup checks failed"
-    fi
-else
-    print_warning "startup_check.py not found, skipping"
-fi
-
 # Initialize exercises
 if [ -f "tools/init_exercises.py" ]; then
     print_info "Initializing exercise files..."
@@ -104,23 +77,17 @@ fi
 print_success ""
 print_success "=== Installation Complete ==="
 print_success ""
-print_success "Your student agent pack is ready!"
+print_success "Your student agent pack is ready in: $(pwd)"
 print_success ""
 print_success "Next steps:"
 print_success "1. Edit config/form_config.json with your Google Form details"
 print_success "2. Complete BOOTSTRAP.md with your information"
-print_success "3. Start working on exercises in the work/ directory"
-print_success ""
-print_success "Available commands:"
-print_success "  python tools/submit_exercise.py --from-markdown work/E1.md"
-print_success "  python tools/progress_dashboard.py"
-print_success "  python tools/ask_course.py --q \"Your question here\""
+print_success "3. Open this folder in your coding agent"
+print_success "4. Start working on exercises in the work/ directory"
 print_success ""
 
 # Offer to install OpenCode
 print_info "=== Coding Agent Setup ==="
-print_info ""
-print_info "To work on exercises, you'll need a coding agent."
 print_info ""
 print_info "Would you like to install OpenCode now? (y/N)"
 read -r response
@@ -128,7 +95,6 @@ if [[ "$response" =~ ^[Yy]$ ]]; then
     print_info "Installing OpenCode..."
     if curl -fsSL https://opencode.ai/install | bash; then
         print_success "OpenCode installed successfully!"
-        print_info "You can now run: opencode"
     else
         print_warning "OpenCode installation failed."
         print_warning "Install manually: curl -fsSL https://opencode.ai/install | bash"
