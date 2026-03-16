@@ -16,6 +16,7 @@ Portable, self-contained workspace for Tinbergen Institute workshop exercises (A
    chmod +x install.sh
    ./install.sh
    ```
+5. When prompted, you can optionally install OpenCode (recommended coding agent for this workshop)
 
 ### Option 2: One-line Install (Linux/macOS)
 
@@ -40,6 +41,23 @@ Visit [github.com/finnoh/ti-student-agent-pack](https://github.com/finnoh/ti-stu
 - **Progress dashboard** - ASCII dashboard showing your progress
 - **Course Q&A tool** - Ask questions about course materials
 - **Startup checker** - Verifies your environment is ready
+
+## Coding Agent Setup
+
+To work on exercises, you'll need a coding agent. Options include:
+
+1. **OpenCode** (recommended for this workshop):
+   ```bash
+   curl -fsSL https://opencode.ai/install | bash
+   ```
+
+2. **VS Code** with GitHub Copilot extension
+
+3. **Cursor** (VS Code-based AI editor)
+
+4. **Claude Code** / **Codex** (CLI tools)
+
+The install script will offer to install OpenCode automatically.
 
 ## For Students
 
