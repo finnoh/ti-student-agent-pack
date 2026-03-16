@@ -85,6 +85,7 @@ print_success ""
 print_info "=== Coding Agent Setup ==="
 print_info ""
 CODING_AGENT=""
+CODING_AGENT_LOWER=""
 response="n"
 OPENCODE_INSTALLED="false"
 
@@ -93,10 +94,16 @@ if [ -r /dev/tty ]; then
     if ! IFS= read -r CODING_AGENT < /dev/tty; then
         CODING_AGENT=""
     fi
+    CODING_AGENT_LOWER=$(printf '%s' "$CODING_AGENT" | tr '[:upper:]' '[:lower:]')
 
-    printf "[INFO] Would you like to install OpenCode now? (y/N) " > /dev/tty
-    if ! IFS= read -r response < /dev/tty; then
-        response="n"
+    if [ "$CODING_AGENT_LOWER" = "opencode" ]; then
+        print_info "Coding agent is opencode; skipping install prompt and proceeding with OpenCode install check."
+        response="y"
+    else
+        printf "[INFO] Would you like to install OpenCode now? (y/N) " > /dev/tty
+        if ! IFS= read -r response < /dev/tty; then
+            response="n"
+        fi
     fi
 else
     print_info "No interactive terminal detected; skipping coding-agent and OpenCode prompts."
