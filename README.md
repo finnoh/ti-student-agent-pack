@@ -6,28 +6,31 @@ Portable, self-contained workspace for Tinbergen Institute workshop exercises (A
 
 ## Quick Start
 
-### Option 1: One-line Install (Linux/macOS)
+### Option 1: Download and Install (Recommended for Students)
 
-```bash
-curl -sL https://raw.githubusercontent.com/finnoh/ti-student-agent-pack/main/install.sh | bash
-```
-
-### Option 2: Download and Install
-
-1. Download the latest release zip file
-2. Extract it to a folder of your choice
-3. Run the installer:
+1. Download the latest release zip file from [GitHub releases](https://github.com/finnoh/ti-student-agent-pack/releases)
+2. Extract it to a new folder (e.g., `student-agent-pack`)
+3. Open a terminal in that folder
+4. Run the installer:
    ```bash
    chmod +x install.sh
    ./install.sh
    ```
 
-### Option 3: Use in Your Project
+### Option 2: One-line Install (Linux/macOS)
 
-1. Download this repository as a zip file
-2. Extract it
-3. Open the folder in your coding agent (VS Code, Cursor, etc.)
-4. Follow the instructions in `AGENTS.md` for coaching
+**Note:** This method downloads the install script only. You'll still need to download the full zip file.
+
+```bash
+curl -sL https://raw.githubusercontent.com/finnoh/ti-student-agent-pack/main/install.sh -o install.sh
+chmod +x install.sh
+# Then download the zip file from GitHub releases and extract it
+# Finally run: ./install.sh
+```
+
+### Option 3: Use the GitHub Repository
+
+Visit [github.com/finnoh/ti-student-agent-pack](https://github.com/finnoh/ti-student-agent-pack) for the latest release and instructions.
 
 ## What's Included
 
@@ -40,8 +43,8 @@ curl -sL https://raw.githubusercontent.com/finnoh/ti-student-agent-pack/main/ins
 
 ## For Students
 
-1. Unzip this folder
-2. Open it in your coding agent
+1. Download and extract the zip file
+2. Open the folder in your coding agent (VS Code, Cursor, etc.)
 3. Follow the coaching instructions in `AGENTS.md`
 4. Write exercises in the `work/` directory
 5. Submit with: `python tools/submit_exercise.py --from-markdown work/E1.md`
