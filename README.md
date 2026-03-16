@@ -26,7 +26,7 @@ curl -sL https://raw.githubusercontent.com/finnoh/ti-student-agent-pack/main/ins
 
 1. Download this repository as a zip file
 2. Extract it
-3. Open the `student-agent-pack` folder in your coding agent (VS Code, Cursor, etc.)
+3. Open the folder in your coding agent (VS Code, Cursor, etc.)
 4. Follow the instructions in `AGENTS.md` for coaching
 
 ## What's Included
@@ -62,8 +62,8 @@ python scripts/course_pack/sync_student_pack_form_config.py --env-file website/.
 
 ## Documentation
 
-- **Full instructions**: See `README.md` in the `student-agent-pack` folder after extraction
-- **Coaching guide**: See `AGENTS.md` in the `student-agent-pack` folder
+- **Full instructions**: See `README.md` in the extracted folder
+- **Coaching guide**: See `AGENTS.md`
 - **Workshop materials**: Visit [Tinbergen Institute Workshop Site](https://finnoh.github.io/ws_genai_eb/)
 
 ## System Requirements
