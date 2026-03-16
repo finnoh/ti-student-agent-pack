@@ -84,20 +84,29 @@ print_success ""
 # Offer to install OpenCode
 print_info "=== Coding Agent Setup ==="
 print_info ""
+CODING_AGENT=""
 response="n"
+OPENCODE_INSTALLED="false"
+
 if [ -r /dev/tty ]; then
+    printf "[INFO] What is your coding agent (opencode, codex, claude, cursor-agent, ...)? " > /dev/tty
+    if ! IFS= read -r CODING_AGENT < /dev/tty; then
+        CODING_AGENT=""
+    fi
+
     printf "[INFO] Would you like to install OpenCode now? (y/N) " > /dev/tty
     if ! IFS= read -r response < /dev/tty; then
         response="n"
     fi
 else
-    print_info "No interactive terminal detected; skipping OpenCode install prompt."
+    print_info "No interactive terminal detected; skipping coding-agent and OpenCode prompts."
 fi
 
 if [[ "$response" =~ ^[Yy]$ ]]; then
     print_info "Installing OpenCode..."
     if curl -fsSL https://opencode.ai/install | bash; then
         print_success "OpenCode installed successfully!"
+        OPENCODE_INSTALLED="true"
     else
         print_warning "OpenCode installation failed."
         print_warning "Install manually: curl -fsSL https://opencode.ai/install | bash"
@@ -110,5 +119,23 @@ fi
 print_success ""
 print_success "=== Ready to Start ==="
 print_success ""
+
+# Final step: ensure we are in student-agent-pack and start coding agent
+cd "$TARGET_DIR" || exit 1
+
+if [ "$OPENCODE_INSTALLED" = "true" ]; then
+    print_success "Starting opencode..."
+    exec opencode
+fi
+
+if [ -n "$CODING_AGENT" ]; then
+    print_success "Starting $CODING_AGENT..."
+    if command -v "$CODING_AGENT" &> /dev/null; then
+        exec "$CODING_AGENT"
+    else
+        print_warning "Command '$CODING_AGENT' not found."
+    fi
+fi
+
 print_success "START YOUR CODING AGENT!"
 print_success ""
