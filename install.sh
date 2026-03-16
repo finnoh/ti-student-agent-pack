@@ -83,8 +83,16 @@ print_success ""
 # Offer to install OpenCode
 print_info "=== Coding Agent Setup ==="
 print_info ""
-print_info "Would you like to install OpenCode now? (y/N)"
-read -r response
+response="n"
+if [ -r /dev/tty ]; then
+    printf "[INFO] Would you like to install OpenCode now? (y/N) " > /dev/tty
+    if ! IFS= read -r response < /dev/tty; then
+        response="n"
+    fi
+else
+    print_info "No interactive terminal detected; skipping OpenCode install prompt."
+fi
+
 if [[ "$response" =~ ^[Yy]$ ]]; then
     print_info "Installing OpenCode..."
     if curl -fsSL https://opencode.ai/install | bash; then
