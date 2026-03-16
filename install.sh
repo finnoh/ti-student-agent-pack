@@ -119,23 +119,17 @@ fi
 print_success ""
 print_success "=== Ready to Start ==="
 print_success ""
-
-# Final step: ensure we are in student-agent-pack and start coding agent
-cd "$TARGET_DIR" || exit 1
-
+LAUNCH_CMD=""
 if [ "$OPENCODE_INSTALLED" = "true" ]; then
-    print_success "Starting opencode..."
-    exec opencode
-fi
-
-if [ -n "$CODING_AGENT" ]; then
-    print_success "Starting $CODING_AGENT..."
-    if command -v "$CODING_AGENT" &> /dev/null; then
-        exec "$CODING_AGENT"
-    else
-        print_warning "Command '$CODING_AGENT' not found."
-    fi
+    LAUNCH_CMD="cd ${TARGET_DIR} && opencode"
+elif [ -n "$CODING_AGENT" ]; then
+    LAUNCH_CMD="cd ${TARGET_DIR} && ${CODING_AGENT}"
 fi
 
 print_success "START YOUR CODING AGENT!"
+if [ -n "$LAUNCH_CMD" ]; then
+    print_success "Copy and run: $LAUNCH_CMD"
+else
+    print_success "Copy and run: cd ${TARGET_DIR} && <your-coding-agent>"
+fi
 print_success ""
