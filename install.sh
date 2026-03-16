@@ -62,7 +62,15 @@ else
         fi
     else
         print_error "Could not find student-agent-pack directory or zip file"
-        print_error "Please download the zip file first or ensure you're in the correct directory"
+        print_error ""
+        print_error "This script must be run from the student-agent-pack directory"
+        print_error "or in a directory containing a zip file."
+        print_error ""
+        print_error "To install:"
+        print_error "1. Download the zip file from:"
+        print_error "   https://github.com/finnoh/ti-student-agent-pack/releases"
+        print_error "2. Extract it to a new folder"
+        print_error "3. Run: chmod +x install.sh && ./install.sh"
         exit 1
     fi
 fi
