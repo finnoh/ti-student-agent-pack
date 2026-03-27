@@ -122,6 +122,7 @@ uv run python tools/full_reset_student_pack.py
 ```
 
 The command asks for explicit confirmation (`RESET`) before discarding local changes.
+It must be run in an interactive terminal; confirmation cannot be bypassed.
 
 ## Jan - Your AI Tutor
 

@@ -131,6 +131,7 @@ Behavior requirements:
 - Jan must warn that local changes in `student-agent-pack/` will be discarded.
 - Jan must require explicit confirmation (`Type RESET to continue`).
 - Only after confirmation should reset proceed.
+- Jan must not bypass confirmation with non-interactive or force flags.
 
 ## Why "Jan"?
 

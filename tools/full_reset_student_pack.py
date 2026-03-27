@@ -24,15 +24,13 @@ def parse_args() -> argparse.Namespace:
         description="Hard reset student-agent-pack folder to a fresh git state from remote."
     )
     parser.add_argument("--ref", default="origin/main", help="Git reference to reset from (default: origin/main)")
-    parser.add_argument("--yes", action="store_true", help="Skip interactive confirmation")
     return parser.parse_args()
 
 
-def confirm_or_exit(force_yes: bool, target_ref: str) -> None:
-    if force_yes:
-        return
+def confirm_or_exit(target_ref: str) -> None:
     if not sys.stdin.isatty():
-        print("ERROR: interactive confirmation required. Re-run with --yes to force reset.")
+        print("ERROR: interactive terminal required for confirmation.")
+        print("Run this command directly in your terminal and type RESET when prompted.")
         raise SystemExit(2)
 
     print("WARNING: This will hard reset the entire student-agent-pack folder.")
@@ -57,7 +55,7 @@ def main() -> int:
     root = repo_root()
     module_rel = "student-agent-pack"
 
-    confirm_or_exit(force_yes=args.yes, target_ref=args.ref)
+    confirm_or_exit(target_ref=args.ref)
 
     fetch = run_git(["fetch", "origin"], cwd=root)
     if fetch.returncode != 0:
