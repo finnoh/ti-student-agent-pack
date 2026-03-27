@@ -19,6 +19,26 @@ def default_index_path() -> Path:
     return pack_root() / ".index" / "course_index.json"
 
 
+def apply_dotenv_defaults() -> None:
+    env_path = pack_root() / ".env"
+    if not env_path.exists():
+        return
+    try:
+        lines = env_path.read_text(encoding="utf-8", errors="ignore").splitlines()
+    except OSError:
+        return
+
+    for line in lines:
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#") or "=" not in stripped:
+            continue
+        key, value = stripped.split("=", 1)
+        key = key.strip()
+        value = value.strip().strip("\"'")
+        if key and key not in os.environ:
+            os.environ[key] = value
+
+
 STOPWORDS = {
     "a",
     "an",
@@ -51,14 +71,25 @@ STOPWORDS = {
     "your",
 }
 
+OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
+DEFAULT_FREE_CHAT_MODEL = "nvidia/nemotron-3-super-120b-a12b:free"
+
+
+def resolve_api_key() -> str:
+    return os.environ.get("OPENROUTER_API_KEY", "").strip() or os.environ.get("OPENAI_API_KEY", "").strip()
+
 
 def parse_args() -> argparse.Namespace:
+    apply_dotenv_defaults()
     parser = argparse.ArgumentParser(description="Ask course questions using the local course index.")
     parser.add_argument("--q", required=True, help="Question to answer")
     parser.add_argument("--index-path", default=str(default_index_path()), help="Path to course index JSON")
     parser.add_argument("--top-k", type=int, default=5, help="How many chunks to retrieve")
-    parser.add_argument("--base-url", default=os.environ.get("OPENAI_BASE_URL", "https://api.openai.com/v1"))
-    parser.add_argument("--chat-model", default=os.environ.get("OPENAI_CHAT_MODEL", "gpt-4o-mini"))
+    parser.add_argument("--base-url", default=os.environ.get("OPENAI_BASE_URL", OPENROUTER_BASE_URL))
+    parser.add_argument(
+        "--chat-model",
+        default=os.environ.get("OPENAI_CHAT_MODEL", os.environ.get("OPENROUTER_DEFAULT_MODEL", DEFAULT_FREE_CHAT_MODEL)),
+    )
     parser.add_argument("--embedding-model", default="", help="Override embedding model for query vector")
     parser.add_argument("--no-llm", action="store_true", help="Do retrieval only (no answer generation)")
     parser.add_argument("--show-snippets", action="store_true", help="Print retrieved snippets")
@@ -243,17 +274,17 @@ def main() -> int:
     index_path = Path(args.index_path)
     if not index_path.exists():
         print(f"ERROR: index not found at {index_path}")
-        print("Run: python tools/index_course_materials.py")
+        print("Run: uv run python tools/index_course_materials.py")
         return 2
 
     index_data = json.loads(index_path.read_text(encoding="utf-8"))
     entries = index_data.get("entries", [])
     if not isinstance(entries, list) or not entries:
         print("ERROR: index has no entries.")
-        print("Run: python tools/index_course_materials.py")
+        print("Run: uv run python tools/index_course_materials.py")
         return 2
 
-    api_key = os.environ.get("OPENAI_API_KEY", "").strip()
+    api_key = resolve_api_key()
     has_index_embeddings = bool(index_data.get("has_embeddings", False))
     query_vector = None
 
@@ -265,7 +296,7 @@ def main() -> int:
             print(f"Warning: {exc}")
             print("Falling back to lexical retrieval.")
     elif has_index_embeddings and not api_key:
-        print("Warning: OPENAI_API_KEY is not set; using lexical retrieval only.")
+        print("Warning: OPENROUTER_API_KEY (or OPENAI_API_KEY) is not set; using lexical retrieval only.")
 
     hits = rank_entries(question=args.q, entries=entries, query_vector=query_vector, top_k=max(1, args.top_k))
     if not hits or hits[0]["score"] <= 0.0:

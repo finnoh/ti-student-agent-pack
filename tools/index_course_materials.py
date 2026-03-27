@@ -29,6 +29,33 @@ def default_site_url() -> str:
     return os.environ.get("COURSE_WEBSITE_URL", "https://finnoh.github.io/ws_genai_eb/").strip()
 
 
+def apply_dotenv_defaults() -> None:
+    env_path = pack_root() / ".env"
+    if not env_path.exists():
+        return
+    try:
+        lines = env_path.read_text(encoding="utf-8", errors="ignore").splitlines()
+    except OSError:
+        return
+
+    for line in lines:
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#") or "=" not in stripped:
+            continue
+        key, value = stripped.split("=", 1)
+        key = key.strip()
+        value = value.strip().strip("\"'")
+        if key and key not in os.environ:
+            os.environ[key] = value
+
+
+OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
+
+
+def resolve_api_key() -> str:
+    return os.environ.get("OPENROUTER_API_KEY", "").strip() or os.environ.get("OPENAI_API_KEY", "").strip()
+
+
 def default_sources() -> list[Path]:
     root = repo_root()
     candidates = [
@@ -42,6 +69,7 @@ def default_sources() -> list[Path]:
 
 
 def parse_args() -> argparse.Namespace:
+    apply_dotenv_defaults()
     parser = argparse.ArgumentParser(description="Build a lightweight local course index for question mode.")
     parser.add_argument(
         "--source-mode",
@@ -63,7 +91,7 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Fail if embeddings cannot be generated",
     )
-    parser.add_argument("--base-url", default=os.environ.get("OPENAI_BASE_URL", "https://api.openai.com/v1"))
+    parser.add_argument("--base-url", default=os.environ.get("OPENAI_BASE_URL", OPENROUTER_BASE_URL))
     return parser.parse_args()
 
 
@@ -308,11 +336,11 @@ def main() -> int:
 
     use_embeddings = not args.no_embeddings
     has_embeddings = False
-    api_key = os.environ.get("OPENAI_API_KEY", "").strip()
+    api_key = resolve_api_key()
 
     if use_embeddings:
         if not api_key:
-            msg = "OPENAI_API_KEY is not set; building lexical-only index."
+            msg = "OPENROUTER_API_KEY (or OPENAI_API_KEY) is not set; building lexical-only index."
             if args.require_embeddings:
                 print(f"ERROR: {msg}")
                 return 2

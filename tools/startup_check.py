@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import json
+import os
 import shutil
 import sys
 from pathlib import Path
@@ -59,6 +60,48 @@ def check_tools() -> tuple[bool, str]:
     return True, f"python3 found at {py}"
 
 
+def check_optional_tools() -> tuple[bool, str]:
+    git_ok = shutil.which("git") is not None
+    gh_ok = shutil.which("gh") is not None
+    uv_ok = shutil.which("uv") is not None
+
+    details = [
+        f"git: {'yes' if git_ok else 'no'}",
+        f"gh: {'yes' if gh_ok else 'no (optional for Track A)'}",
+        f"uv: {'yes' if uv_ok else 'no (optional)'}",
+    ]
+    return True, ", ".join(details)
+
+
+def check_openrouter_env(base: Path) -> tuple[bool, str]:
+    env_path = base / ".env"
+    env_key = os.environ.get("OPENROUTER_API_KEY", "").strip()
+
+    if env_key:
+        return True, "OPENROUTER_API_KEY loaded in environment"
+
+    if not env_path.exists():
+        return False, "Missing .env with OPENROUTER_API_KEY"
+
+    try:
+        lines = env_path.read_text(encoding="utf-8", errors="ignore").splitlines()
+    except OSError as exc:
+        return False, f"Could not read .env: {exc}"
+
+    for line in lines:
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#"):
+            continue
+        if not stripped.startswith("OPENROUTER_API_KEY="):
+            continue
+        value = stripped.split("=", 1)[1].strip()
+        if value:
+            return True, "OPENROUTER_API_KEY present in .env"
+        return False, "OPENROUTER_API_KEY is empty in .env"
+
+    return False, "OPENROUTER_API_KEY not found in .env"
+
+
 def print_result(name: str, ok: bool, detail: str) -> None:
     mark = "[OK]" if ok else "[FAIL]"
     print(f"{mark} {name}: {detail}")
@@ -69,6 +112,8 @@ def main() -> int:
     checks = [
         ("Python", *check_python()),
         ("Tools", *check_tools()),
+        ("Optional tools", *check_optional_tools()),
+        ("OpenRouter key", *check_openrouter_env(base)),
         ("Directories", *check_dirs(base)),
         ("Form config", *check_config(base / "config" / "form_config.json")),
     ]

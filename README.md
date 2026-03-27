@@ -2,6 +2,16 @@
 
 Portable, self-contained workspace for Tinbergen Institute workshop exercises.
 
+## Workflow Track
+
+Default mode is **Track A (local-first, no GitHub workflow required)**.
+
+- Do exercises in `work/E1.md` ... `work/E12.md`
+- Submit with `uv run python tools/submit_exercise.py --from-markdown work/<EXERCISE_ID>.md`
+- Keep all progress local in this folder
+
+GitHub issues and PRs are optional and only needed for advanced collaboration drills.
+
 ## Quick Start
 
 ### Option 1: One-line Install (Recommended)
@@ -13,11 +23,20 @@ curl -sL https://raw.githubusercontent.com/finnoh/ti-student-agent-pack/main/ins
 This will:
 1. Clone the repository to `student-agent-pack/` directory
 2. Set up your environment
-3. Optionally install OpenCode (coding agent)
+3. Prompt you to create/login OpenRouter account (`https://openrouter.ai/`) and paste your API key
+4. Write `.env` defaults for OpenRouter backend (`OPENROUTER_API_KEY`, `OPENAI_BASE_URL`, default free model)
+5. Optionally install OpenCode (coding agent)
+6. Configure `opencode.json` with the LangChain docs MCP (`https://docs.langchain.com/mcp`)
+7. Configure MCP defaults for Cursor (`.cursor/mcp.json`) and VS Code (`.vscode/mcp.json`)
 
 **Requirements:**
 - Git (for cloning)
-- Python 3.8+
+- Python 3.10+
+- uv (recommended; auto-detected by installer)
+
+`gh` (GitHub CLI) is **not required** for Track A.
+
+If you choose `codex` or `claude` during install, the installer also attempts a direct CLI MCP registration for that agent.
 
 ### Option 2: Manual Installation
 
@@ -31,18 +50,68 @@ This will:
 
 ## What's Included
 
-- **Exercise files (E1-E8)** - Pre-created templates for all workshop exercises
+- **Exercise files (E1-E12)** - Pre-created templates for all workshop exercises
 - **Submission tools** - Python scripts for submitting exercises
 - **Jan coaching agent** (`AGENTS.md`) - Your AI tutor
 - **Progress dashboard** - Track your exercise completion
 - **Course Q&A tool** - Ask questions about course materials
+- **OpenCode config** (`opencode.json`) - Jan instructions + LangChain docs MCP
+- **Cursor MCP config** (`.cursor/mcp.json`) - LangChain docs MCP
+- **VS Code MCP config** (`.vscode/mcp.json`) - LangChain docs MCP
+- **OpenRouter free model list** (`config/openrouter_free_models.json`) - Ranked defaults (best to worst)
+
+## OpenRouter Defaults
+
+- API key variable: `OPENROUTER_API_KEY` (stored in root `.env`)
+- Backend URL: `https://openrouter.ai/api/v1`
+- Default model ranking (best to worst):
+  1. `nvidia/nemotron-3-super-120b-a12b:free`
+  2. `minimax/minimax-m2.5:free`
+  3. `stepfun/step-3.5-flash:free`
+  4. `arcee-ai/trinity-large-preview:free`
+  5. `openai/gpt-oss-120b:free`
+  6. `z-ai/glm-4.5-air:free`
+
+Students can override model settings in `.env`, but the installer sets this free-model order as default.
 
 ## Next Steps
 
 1. Open the `student-agent-pack/` folder in your coding agent (VS Code, Cursor, OpenCode, etc.)
-2. Edit `config/form_config.json` with your Google Form details
-3. Complete `BOOTSTRAP.md` with your information
-4. Start working on exercises in the `work/` directory
+2. Run `uv sync` once to create `.venv` (if installer did not already do it)
+3. Confirm `.env` contains your `OPENROUTER_API_KEY`
+4. Edit `config/form_config.json` with your Google Form details
+5. Complete `BOOTSTRAP.md` with your information
+6. Start working on exercises in the `work/` directory
+
+## Manual Backup Mode
+
+If agent-assisted flow fails, print a fallback packet + manual submission link:
+
+```bash
+uv run python tools/print_exercise_packet.py --exercise-id E3
+```
+
+This shows the objective, deliverable target, and the Google Form URL (prefilled with `exercise_id` when field IDs are configured).
+
+## Exercise Progress Dashboard
+
+Track all exercises with status symbols:
+
+```bash
+uv run python tools/progress_dashboard.py
+```
+
+Legend: blank = not started, `[ ]` = started, `[X]` = submitted.
+
+## Startup File Hygiene
+
+To keep shared repos clean, remove the local startup marker before push:
+
+```bash
+uv run python tools/strip_startup_complete.py
+```
+
+The installer also sets a local pre-push hook that checks this automatically.
 
 ## Jan - Your AI Tutor
 

@@ -1,5 +1,12 @@
 # Course Context Pack (E1-E8)
 
+## Default stack
+
+- LangChain deep-agent is the default exercise pattern.
+- OpenRouter is the default model backend.
+- Root `.env` stores `OPENROUTER_API_KEY`.
+- Prefer free models first; students may override.
+
 ## Standard block loop
 
 - Observe one decision.
@@ -25,48 +32,48 @@
 
 ### E1 - Prompt anatomy lab
 
-- Goal: diagnose weak prompt and produce improved version.
-- Deliverable: before/after prompt plus rationale.
-- Failure risk: vague constraints.
+- Goal: set up OpenRouter + deep-agent defaults and verify one run.
+- Deliverable: setup note with model choice and successful test output.
+- Failure risk: key/config mismatch in `.env`.
 
 ### E2 - Prompt rewrite challenge
 
-- Goal: run A/B prompt comparison with evidence.
-- Deliverable: scored A/B note and final prompt.
-- Failure risk: too many variables changed between A and B.
+- Goal: define deep-agent task prompt + tool constraints.
+- Deliverable: system prompt plus one tool-routing decision table.
+- Failure risk: prompt is broad and causes unstable tool use.
 
 ### E3 - IDE coding sprint
 
-- Goal: complete one bugfix or refactor safely.
+- Goal: implement one deep-agent module with LangChain docs support.
 - Deliverable: patch summary and verification trace.
-- Failure risk: no executable check.
+- Failure risk: API mismatch from skipping docs lookup.
 
 ### E4 - Draft and verify paragraph
 
-- Goal: claim-evidence paragraph with citation checks.
-- Deliverable: paragraph plus mini verification checklist.
-- Failure risk: unsupported claim.
+- Goal: add structured output for one deep-agent step.
+- Deliverable: schema + validated sample output.
+- Failure risk: output schema too weak for verification.
 
 ### E5 - Design an agent workflow
 
-- Goal: reliability-aware workflow with clear boundaries.
+- Goal: design reliability-aware deep-agent workflow.
 - Deliverable: architecture sketch and fallback path.
 - Failure risk: missing human escalation.
 
 ### E6 - Build a mini pipeline
 
-- Goal: end-to-end mini pipeline with explicit limitations.
+- Goal: add memory/retrieval to deep-agent pipeline.
 - Deliverable: protocol note with sample artifacts.
-- Failure risk: overclaiming from synthetic outputs.
+- Failure risk: overclaiming from retrieved snippets.
 
 ### E7 - Evaluate two outputs
 
-- Goal: rubric-based comparison and adoption advice.
-- Deliverable: scored table plus short memo.
-- Failure risk: score inflation without evidence.
+- Goal: compare two free OpenRouter models on same task.
+- Deliverable: scored table plus short adoption memo.
+- Failure risk: uncontrolled prompt/settings across model runs.
 
 ### E8 - Resilience protocol plan
 
-- Goal: practical personal verification protocol.
+- Goal: create a deep-agent resilience protocol.
 - Deliverable: one-page protocol with trigger rules.
 - Failure risk: generic rules with no trigger conditions.

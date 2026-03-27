@@ -1,0 +1,9 @@
+[project]
+name = "ti-student-agent-pack"
+version = "0.1.0"
+description = "Tinbergen Institute student coding environment"
+requires-python = ">=3.10"
+dependencies = []
+
+[tool.uv]
+package = false

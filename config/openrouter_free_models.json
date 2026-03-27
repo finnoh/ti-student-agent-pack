@@ -1,0 +1,11 @@
+{
+  "default_model": "nvidia/nemotron-3-super-120b-a12b:free",
+  "models_best_to_worst": [
+    "nvidia/nemotron-3-super-120b-a12b:free",
+    "minimax/minimax-m2.5:free",
+    "stepfun/step-3.5-flash:free",
+    "arcee-ai/trinity-large-preview:free",
+    "openai/gpt-oss-120b:free",
+    "z-ai/glm-4.5-air:free"
+  ]
+}
