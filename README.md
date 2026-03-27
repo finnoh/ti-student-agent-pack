@@ -103,6 +103,12 @@ uv run python tools/progress_dashboard.py
 
 Legend: blank = not started, `[ ]` = started, `[X]` = submitted.
 
+Sequential recommendation helper:
+
+```bash
+uv run python tools/recommend_next_exercise.py
+```
+
 ## Startup File Hygiene
 
 To keep shared repos clean, remove the local startup marker before push:
@@ -114,6 +120,8 @@ uv run python tools/strip_startup_complete.py
 The installer also sets a local pre-push hook that checks this automatically.
 
 ## Full Reset (Dangerous)
+
+Reset is allowed only in supervisor mode.
 
 To reset `student-agent-pack/` to a fresh remote state:
 
@@ -127,6 +135,21 @@ It must be run in an interactive terminal; confirmation cannot be bypassed.
 ## Jan - Your AI Tutor
 
 Jan is your AI tutor for the Tinbergen Institute workshop.
+
+## Teacher Mode (OpenCode)
+
+OpenCode includes a `teacher` primary agent mode in `opencode.json`.
+
+- It is coaching-only and intentionally restricted.
+- It can run `bash`, `webfetch`, `task`, and `skill` tools for coaching support.
+- It cannot edit files.
+- It asks students to execute steps and provide evidence.
+- It cannot execute the full reset flow.
+
+Default: the OpenCode `build` agent is configured to start in this teacher mode behavior.
+
+In OpenCode, use Tab to cycle primary agents and select `teacher`.
+Use `supervisor` mode only for administrative recovery actions like full reset.
 When you open Jan, it guides you through exercises with concise step-by-step coaching.
 
 ## More Information

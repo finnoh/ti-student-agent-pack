@@ -12,5 +12,74 @@
       "url": "https://docs.langchain.com/mcp",
       "enabled": true
     }
+  },
+  "agent": {
+    "build": {
+      "description": "Default Jan teacher mode: student-first coaching",
+      "mode": "primary",
+      "prompt": "{file:./context/teacher_mode_prompt.md}",
+      "permission": {
+        "edit": "deny",
+        "bash": {
+          "*": "allow",
+          "uv run python tools/full_reset_student_pack.py*": "deny",
+          "python* tools/full_reset_student_pack.py*": "deny"
+        },
+        "webfetch": "allow",
+        "task": "allow",
+        "skill": {
+          "*": "allow",
+          "full-reset*": "deny",
+          "reset*": "deny"
+        }
+      }
+    },
+    "teacher": {
+      "description": "Jan teacher mode: student-first coaching without doing tasks for the student",
+      "mode": "primary",
+      "prompt": "{file:./context/teacher_mode_prompt.md}",
+      "permission": {
+        "edit": "deny",
+        "bash": {
+          "*": "allow",
+          "uv run python tools/full_reset_student_pack.py*": "deny",
+          "python* tools/full_reset_student_pack.py*": "deny"
+        },
+        "webfetch": "allow",
+        "task": "allow",
+        "skill": {
+          "*": "allow",
+          "full-reset*": "deny",
+          "reset*": "deny"
+        }
+      }
+    },
+    "supervisor": {
+      "description": "Supervisor mode for administrative recovery actions including full reset",
+      "mode": "primary",
+      "prompt": "{file:./context/supervisor_mode_prompt.md}",
+      "permission": {
+        "edit": {
+          "*": "deny",
+          "STARTUP.md": "allow",
+          "INSIGHTS.md": "allow",
+          "work/*.md": "allow"
+        },
+        "bash": {
+          "*": "deny",
+          "git status*": "allow",
+          "git fetch*": "allow",
+          "uv run python tools/full_reset_student_pack.py*": "allow",
+          "python* tools/full_reset_student_pack.py*": "allow"
+        },
+        "webfetch": "allow",
+        "task": "ask",
+        "skill": {
+          "*": "deny",
+          "full-reset*": "allow",
+          "reset*": "allow"
+        }
+      }
+    }
   }
 }

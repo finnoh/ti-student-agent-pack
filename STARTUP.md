@@ -18,7 +18,10 @@ If checks pass during your local session, you may add this header at the top of 
 
 `## STARTUP COMPLETE`
 
-The startup check now verifies `OPENROUTER_API_KEY` in environment or root `.env`.
+The startup check now verifies:
+
+- `OPENROUTER_API_KEY` in environment or root `.env`
+- OpenCode default `build` agent is configured for teacher mode
 
 Before committing/pushing, remove `## STARTUP COMPLETE` so the shared template stays clean.
 

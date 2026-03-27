@@ -102,6 +102,41 @@ def check_openrouter_env(base: Path) -> tuple[bool, str]:
     return False, "OPENROUTER_API_KEY not found in .env"
 
 
+def check_teacher_mode(base: Path) -> tuple[bool, str]:
+    config_path = base / "opencode.json"
+    if not config_path.exists():
+        return False, "Missing opencode.json"
+
+    try:
+        config = json.loads(config_path.read_text(encoding="utf-8"))
+    except Exception as exc:
+        return False, f"Invalid opencode.json: {exc}"
+
+    agents = config.get("agent", {})
+    if not isinstance(agents, dict):
+        return False, "opencode.json: agent section is missing or invalid"
+
+    build = agents.get("build", {})
+    teacher = agents.get("teacher", {})
+    if not isinstance(build, dict) or not isinstance(teacher, dict):
+        return False, "opencode.json: build/teacher agent config missing"
+
+    teacher_prompt = "{file:./context/teacher_mode_prompt.md}"
+    build_prompt = str(build.get("prompt", "")).strip()
+    teacher_agent_prompt = str(teacher.get("prompt", "")).strip()
+
+    if build_prompt != teacher_prompt:
+        return (
+            False,
+            "OpenCode build agent is not in teacher mode. Switch to teacher mode (Tab) or update opencode.json.",
+        )
+
+    if teacher_agent_prompt != teacher_prompt:
+        return False, "Teacher agent prompt is not configured to context/teacher_mode_prompt.md"
+
+    return True, "OpenCode starts in teacher mode by default"
+
+
 def print_result(name: str, ok: bool, detail: str) -> None:
     mark = "[OK]" if ok else "[FAIL]"
     print(f"{mark} {name}: {detail}")
@@ -113,6 +148,7 @@ def main() -> int:
         ("Python", *check_python()),
         ("Tools", *check_tools()),
         ("Optional tools", *check_optional_tools()),
+        ("Teacher mode", *check_teacher_mode(base)),
         ("OpenRouter key", *check_openrouter_env(base)),
         ("Directories", *check_dirs(base)),
         ("Form config", *check_config(base / "config" / "form_config.json")),
