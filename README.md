@@ -113,6 +113,16 @@ uv run python tools/strip_startup_complete.py
 
 The installer also sets a local pre-push hook that checks this automatically.
 
+## Full Reset (Dangerous)
+
+To reset `student-agent-pack/` to a fresh remote state:
+
+```bash
+uv run python tools/full_reset_student_pack.py
+```
+
+The command asks for explicit confirmation (`RESET`) before discarding local changes.
+
 ## Jan - Your AI Tutor
 
 Jan is your AI tutor for the Tinbergen Institute workshop.

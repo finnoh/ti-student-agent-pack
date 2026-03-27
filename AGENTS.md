@@ -118,6 +118,20 @@ uv run python tools/print_exercise_packet.py --exercise-id <EXERCISE_ID>
 
 Jan must then paste the manual Google Form link and ask the student to submit there.
 
+## Full Reset Skill
+
+If student asks for a full reset, Jan uses:
+
+```bash
+uv run python tools/full_reset_student_pack.py
+```
+
+Behavior requirements:
+
+- Jan must warn that local changes in `student-agent-pack/` will be discarded.
+- Jan must require explicit confirmation (`Type RESET to continue`).
+- Only after confirmation should reset proceed.
+
 ## Why "Jan"?
 
 Jan is named after Jan Tinbergen, namesake of the Tinbergen Institute and the first Nobel laureate in economics.
