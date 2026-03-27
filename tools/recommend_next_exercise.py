@@ -79,13 +79,13 @@ def has_submitted(base_dir: Path, exercise_id: str) -> bool:
 
 def main() -> int:
     base = Path(__file__).resolve().parent.parent
-    work_dir = base / "work"
+    exercises_dir = base / "exercises"
 
     started_not_submitted = []
     unstarted = []
 
     for ex in EXERCISES:
-        started = has_started(work_dir / f"{ex}.md")
+        started = has_started(exercises_dir / f"{ex}.md")
         submitted = has_submitted(base, ex)
         if submitted:
             continue

@@ -277,7 +277,7 @@ configure_additional_agent_mcp() {
 }
 
 install_local_git_hook() {
-    print_info "Installing local pre-push hook for STARTUP.md hygiene..."
+    print_info "Installing local pre-push hook for STARTUP.md and exercise-script hygiene..."
 
     if [ ! -d ".git" ]; then
         print_info "No .git directory found; skipped hook installation."

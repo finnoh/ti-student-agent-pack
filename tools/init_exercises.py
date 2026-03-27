@@ -103,15 +103,16 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Initialize prefilled markdown files for E1-E12")
     parser.add_argument("--student-name", default="", help="Student name used in front matter")
     parser.add_argument(
-        "--work-dir",
-        default=str(Path(__file__).resolve().parent.parent / "work"),
-        help="Work directory for exercise markdown files",
+        "--exercises-dir",
+        default=str(Path(__file__).resolve().parent.parent / "exercises"),
+        help="Exercises directory for exercise markdown files",
     )
+    parser.add_argument("--work-dir", default="", help="Deprecated alias for --exercises-dir")
     parser.add_argument("--overwrite", action="store_true", help="Overwrite existing files")
     args = parser.parse_args()
 
-    work_dir = Path(args.work_dir)
-    work_dir.mkdir(parents=True, exist_ok=True)
+    target_dir = Path(args.work_dir) if args.work_dir else Path(args.exercises_dir)
+    target_dir.mkdir(parents=True, exist_ok=True)
 
     created = 0
     skipped = 0
@@ -119,7 +120,7 @@ def main() -> int:
     student_name = args.student_name.strip() or ""
 
     for exercise_id in [f"E{i}" for i in range(1, 13)]:
-        file_path = work_dir / f"{exercise_id}.md"
+        file_path = target_dir / f"{exercise_id}.md"
         if file_path.exists() and not args.overwrite:
             skipped += 1
             continue
@@ -129,7 +130,7 @@ def main() -> int:
     print("Initialized exercise files E1-E12.")
     print(f"Created: {created}")
     print(f"Skipped: {skipped}")
-    print(f"Location: {work_dir}")
+    print(f"Location: {target_dir}")
     return 0
 
 

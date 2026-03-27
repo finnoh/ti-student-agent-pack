@@ -113,12 +113,12 @@ def symbol(started: bool, submitted: bool) -> str:
 
 
 def render_dashboard(base_dir: Path, selected: str | None = None) -> None:
-    work_dir = base_dir / "work"
+    exercises_dir = base_dir / "exercises"
     exercises = [selected] if selected else EXERCISES
 
     states: dict[str, tuple[bool, bool]] = {}
     for ex in exercises:
-        started = has_started(work_dir / f"{ex}.md")
+        started = has_started(exercises_dir / f"{ex}.md")
         submitted = has_submitted(base_dir, ex)
         states[ex] = (started, submitted)
 

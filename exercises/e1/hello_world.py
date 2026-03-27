@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 
+# Imports
 import csv
 import json
 import os
 from pathlib import Path
 
 
+# Functions
 def load_rows(csv_path: Path) -> list[dict]:
     with csv_path.open("r", encoding="utf-8", newline="") as handle:
         return list(csv.DictReader(handle))
@@ -60,5 +62,6 @@ def main() -> int:
     return 0
 
 
+# Code
 if __name__ == "__main__":
     raise SystemExit(main())

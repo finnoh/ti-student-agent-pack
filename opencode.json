@@ -54,6 +54,37 @@
         }
       }
     },
+    "code": {
+      "description": "Jan code mode: selective code snippets in exercises/ only",
+      "mode": "primary",
+      "prompt": "{file:./context/code_mode_prompt.md}",
+      "permission": {
+        "edit": {
+          "*": "deny",
+          "exercises/*.md": "allow",
+          "exercises/**/*.md": "allow",
+          "exercises/**/*.py": "allow",
+          "exercises/**/*.ipynb": "allow"
+        },
+        "bash": {
+          "*": "deny",
+          "git status*": "allow",
+          "mkdir exercises/*": "allow",
+          "mkdir -p exercises/*": "allow",
+          "touch exercises/*": "allow",
+          "python -m py_compile*": "allow",
+          "uv run python exercises/*": "allow",
+          "uv run python tools/progress_dashboard.py*": "allow"
+        },
+        "webfetch": "allow",
+        "task": "allow",
+        "skill": {
+          "*": "allow",
+          "full-reset*": "deny",
+          "reset*": "deny"
+        }
+      }
+    },
     "supervisor": {
       "description": "Supervisor mode for administrative recovery actions including full reset",
       "mode": "primary",
@@ -63,7 +94,7 @@
           "*": "deny",
           "STARTUP.md": "allow",
           "INSIGHTS.md": "allow",
-          "work/*.md": "allow"
+           "exercises/*.md": "allow"
         },
         "bash": {
           "*": "deny",

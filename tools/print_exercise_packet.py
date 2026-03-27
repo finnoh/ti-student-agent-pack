@@ -15,8 +15,8 @@ def default_config_path() -> Path:
     return pack_root() / "config" / "form_config.json"
 
 
-def default_work_path(exercise_id: str) -> Path:
-    return pack_root() / "work" / f"{exercise_id}.md"
+def default_exercise_path(exercise_id: str) -> Path:
+    return pack_root() / "exercises" / f"{exercise_id}.md"
 
 
 def parse_args() -> argparse.Namespace:
@@ -25,7 +25,8 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--exercise-id", required=True, help="Exercise ID like E1, E2, ...")
     parser.add_argument("--config", default=str(default_config_path()), help="Path to form config JSON")
-    parser.add_argument("--work-file", default="", help="Path to exercise markdown file")
+    parser.add_argument("--exercise-file", default="", help="Path to exercise markdown file")
+    parser.add_argument("--work-file", default="", help="Deprecated alias for --exercise-file")
     parser.add_argument("--include-answer", action="store_true", help="Also print current answer draft")
     return parser.parse_args()
 
@@ -93,12 +94,13 @@ def main() -> int:
         print("ERROR: --exercise-id must look like E1, E2, ...")
         return 2
 
-    work_file = Path(args.work_file).resolve() if args.work_file else default_work_path(exercise_id)
-    if not work_file.exists():
-        print(f"ERROR: exercise file not found: {work_file}")
+    selected_file = args.exercise_file or args.work_file
+    exercise_file = Path(selected_file).resolve() if selected_file else default_exercise_path(exercise_id)
+    if not exercise_file.exists():
+        print(f"ERROR: exercise file not found: {exercise_file}")
         return 2
 
-    markdown_text = work_file.read_text(encoding="utf-8")
+    markdown_text = exercise_file.read_text(encoding="utf-8")
     sections = parse_sections(markdown_text)
 
     config = apply_env_overrides(load_config(Path(args.config)))
@@ -109,7 +111,7 @@ def main() -> int:
     print("+--------------------------------------------------+")
     print(f"| Backup Mode Packet - {exercise_id:<28}|")
     print("+--------------------------------------------------+")
-    print(f"Exercise file: {work_file}")
+    print(f"Exercise file: {exercise_file}")
     print("")
 
     objective = sections.get("objective", "")

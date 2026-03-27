@@ -1,6 +1,6 @@
-# Student work files
+# Student exercise files
 
-Write exercise work in markdown files in this folder.
+Write exercise drafts in markdown files in this folder.
 
 Recommended pattern:
 
@@ -11,11 +11,12 @@ uv run python tools/init_exercises.py --student-name "Alex"
 ```
 
 2. Open the relevant file (for example `E3.md`, now available for E1-E12).
+   - Optional scaffold folders: `exercises/e1/` and `exercises/e2/`.
 3. Fill the answer sections iteratively with the tutor.
 4. Submit directly from markdown:
 
 ```bash
-uv run python tools/submit_exercise.py --from-markdown work/E3.md
+uv run python tools/submit_exercise.py --from-markdown exercises/E3.md
 ```
 
 Backup manual mode:

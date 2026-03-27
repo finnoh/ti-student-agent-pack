@@ -7,8 +7,8 @@ Use this catalog for fast exercise routing and concise coaching.
 - Deliverable: Setup evidence + hello-world run log + one Jan customization note.
 
 ## E2 - Prompt anatomy in LangChain code
-- Objective: Turn prompt anatomy into runnable LangChain code.
-- Deliverable: Runnable snippet with structured output for two test inputs.
+- Objective: Run a first LangChain prompt, solve country extraction from noisy text, and add a quick model/docs orientation.
+- Deliverable: Runnable snippet returning a Python list of cleaned country names plus a short orientation note.
 
 ## E3 - Context pipeline with retrieval
 - Objective: Compare no-context baseline vs retrieval-based context.

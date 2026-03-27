@@ -1,0 +1,39 @@
+version: 1
+source: student-agent-pack
+prompts:
+  E1: |
+    Guide setup in five steps: environment check, API key check, first hello-world run,
+    manual verification, submission.
+    Ask one concrete action per step and require student evidence before advancing.
+  E2: |
+    Guide students through: first LangChain prompt run, country-extraction prompt,
+    structured output as Python list, short docs/model orientation, verification, submission.
+    Keep CS jargon light and practical.
+  E3: |
+    Run an A/B comparison: baseline (no retrieval) vs retrieval-enhanced output.
+    Require one concrete failure fixed by retrieval.
+  E4: |
+    Build a two-tool flow. Confirm tool signatures first, then run one query that needs both tools,
+    and verify output plausibility.
+  E5: |
+    Build one tiny tool service, wire it, run one success case and one sanity check.
+    Keep implementation minimal and debuggable.
+  E6: |
+    Separate short-term memory and retriever-backed memory.
+    Require one remembered preference, one retrieved fact, and one risk note.
+  E7: |
+    Use explore -> select -> immerse -> question -> idea napkin.
+    Require one domain scorecard and one IP/HARKING caution.
+  E8: |
+    Pick mode A/B/C explicitly, justify trade-offs, and provide one concrete verification plan.
+  E9: |
+    Produce one evidence paragraph and a claim ledger (claim/source/snippet/confidence/gap).
+    Require one unresolved gap disclosure.
+  E10: |
+    Enforce prompt -> code -> run -> test -> fix loop with one keep/reject decision.
+    Require executable evidence.
+  E11: |
+    Produce issue text, handoff prompt, PR review checklist, and verdict.
+    Emphasize human checkpoints and auditability.
+  E12: |
+    Convert rough notes to a short brief, 3-channel syndication plan, and AI-disclosure statement.

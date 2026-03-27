@@ -7,8 +7,8 @@ Portable, self-contained workspace for course exercises.
 1. Unzip this folder.
 2. Open this folder in their coding agent.
 3. Use the built-in coach in `AGENTS.md` while working on exercises.
-4. Write each exercise in markdown files under `work/`.
-5. Submit with `python tools/submit_exercise.py --from-markdown work/<FILE>.md`.
+4. Write each exercise in markdown files under `exercises/`.
+5. Submit with `python tools/submit_exercise.py --from-markdown exercises/<FILE>.md`.
 
 The coach is configured as a personalized tutor: it presents each exercise,
 asks one concrete question at a time, and updates the markdown submission file
@@ -92,23 +92,23 @@ python tools/submit_exercise.py
 ```
 
 ```bash
-python tools/submit_exercise.py --from-markdown work/E3.md
+python tools/submit_exercise.py --from-markdown exercises/E3.md
 ```
 
 ```bash
-python tools/submit_exercise.py --from-markdown work/E3.md --student-name "Alex"
+python tools/submit_exercise.py --from-markdown exercises/E3.md --student-name "Alex"
 ```
 
 ```bash
-python tools/submit_exercise.py --from-markdown work/E3.md --no-submit
+python tools/submit_exercise.py --from-markdown exercises/E3.md --no-submit
 ```
 
 ```bash
-python tools/submit_exercise.py --from-markdown work/E3.md --retry-count 3 --retry-backoff 2
+python tools/submit_exercise.py --from-markdown exercises/E3.md --retry-count 3 --retry-backoff 2
 ```
 
 ```bash
-python tools/submit_exercise.py --from-markdown work/E3.md --submit-mode code
+python tools/submit_exercise.py --from-markdown exercises/E3.md --submit-mode code
 ```
 
 ```bash
@@ -181,5 +181,5 @@ the submit helper now prompts for the URL and can save it automatically.
 - Optional with `uv`:
 
 ```bash
-uv run python tools/submit_exercise.py --from-markdown work/E3.md
+uv run python tools/submit_exercise.py --from-markdown exercises/E3.md
 ```

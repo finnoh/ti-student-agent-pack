@@ -47,7 +47,7 @@ def check_config(path: Path) -> tuple[bool, str]:
 
 
 def check_dirs(base: Path) -> tuple[bool, str]:
-    for folder in [base / "work", base / "submissions", base / "tools", base / "config"]:
+    for folder in [base / "exercises", base / "submissions", base / "tools", base / "config"]:
         if not folder.exists():
             return False, f"Missing directory: {folder}"
     return True, "Required directories present"

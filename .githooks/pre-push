@@ -2,21 +2,31 @@
 set -euo pipefail
 
 ROOT_DIR="$(git rev-parse --show-toplevel)"
-SCRIPT="$ROOT_DIR/tools/strip_startup_complete.py"
+STARTUP_SCRIPT="$ROOT_DIR/tools/strip_startup_complete.py"
+EXERCISE_SCRIPT="$ROOT_DIR/tools/strip_exercise_scripts.py"
 STARTUP_FILE="$ROOT_DIR/STARTUP.md"
 
-if [ ! -f "$STARTUP_FILE" ] || [ ! -f "$SCRIPT" ]; then
+if [ ! -f "$STARTUP_FILE" ] || [ ! -f "$STARTUP_SCRIPT" ]; then
   exit 0
 fi
 
 BEFORE_HASH="$(shasum "$STARTUP_FILE" | awk '{print $1}')"
-python3 "$SCRIPT" >/dev/null
+python3 "$STARTUP_SCRIPT" >/dev/null
 AFTER_HASH="$(shasum "$STARTUP_FILE" | awk '{print $1}')"
 
 if [ "$BEFORE_HASH" != "$AFTER_HASH" ]; then
   echo "[pre-push] STARTUP.md was cleaned (removed STARTUP COMPLETE marker)."
   echo "[pre-push] Commit this change, then push again."
   exit 1
+fi
+
+if [ -f "$EXERCISE_SCRIPT" ]; then
+  python3 "$EXERCISE_SCRIPT" >/dev/null
+  if ! git diff --quiet -- ":(glob)exercises/**/*.py"; then
+    echo "[pre-push] Exercise Python scripts were reset to template form."
+    echo "[pre-push] Commit these reset changes, then push again."
+    exit 1
+  fi
 fi
 
 exit 0

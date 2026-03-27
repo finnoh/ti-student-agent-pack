@@ -6,8 +6,8 @@ Portable, self-contained workspace for Tinbergen Institute workshop exercises.
 
 Default mode is **Track A (local-first, no GitHub workflow required)**.
 
-- Do exercises in `work/E1.md` ... `work/E12.md`
-- Submit with `uv run python tools/submit_exercise.py --from-markdown work/<EXERCISE_ID>.md`
+- Do exercises in `exercises/E1.md` ... `exercises/E12.md`
+- Submit with `uv run python tools/submit_exercise.py --from-markdown exercises/<EXERCISE_ID>.md`
 - Keep all progress local in this folder
 
 GitHub issues and PRs are optional and only needed for advanced collaboration drills.
@@ -56,6 +56,7 @@ If you choose `codex` or `claude` during install, the installer also attempts a 
 - **Progress dashboard** - Track your exercise completion
 - **Course Q&A tool** - Ask questions about course materials
 - **OpenCode config** (`opencode.json`) - Jan instructions + LangChain docs MCP
+- **Jan modes in OpenCode** - `teacher` (default, coach-only), `code` (selective code in `exercises/`), `supervisor` (admin recovery)
 - **Cursor MCP config** (`.cursor/mcp.json`) - LangChain docs MCP
 - **VS Code MCP config** (`.vscode/mcp.json`) - LangChain docs MCP
 - **OpenRouter free model list** (`config/openrouter_free_models.json`) - Ranked defaults (best to worst)
@@ -77,11 +78,13 @@ Students can override model settings in `.env`, but the installer sets this free
 ## Next Steps
 
 1. Open the `student-agent-pack/` folder in your coding agent (VS Code, Cursor, OpenCode, etc.)
-2. Run `uv sync` once to create `.venv` (if installer did not already do it)
-3. Confirm `.env` contains your `OPENROUTER_API_KEY`
-4. Edit `config/form_config.json` with your Google Form details
-5. Complete `BOOTSTRAP.md` with your information
-6. Start working on exercises in the `work/` directory
+2. Use `teacher` mode for guidance; switch to `code` mode when you want Jan to create/edit small files in `exercises/`.
+3. Ask explicitly: "Create `exercises/...` now and tell me how to open it in VS Code."
+4. Run `uv sync` once to create `.venv` (if installer did not already do it)
+5. Confirm `.env` contains your `OPENROUTER_API_KEY`
+6. Edit `config/form_config.json` with your Google Form details
+7. Complete `BOOTSTRAP.md` with your information
+8. Start working on exercises in the `exercises/` directory
 
 ## Manual Backup Mode
 
@@ -119,6 +122,16 @@ uv run python tools/strip_startup_complete.py
 
 The installer also sets a local pre-push hook that checks this automatically.
 
+## Exercise Script Hygiene
+
+To reset Python scripts under `exercises/` to a minimal template before push:
+
+```bash
+uv run python tools/strip_exercise_scripts.py
+```
+
+The local pre-push hook runs this automatically and blocks push if it rewrote files.
+
 ## Full Reset (Dangerous)
 
 Reset is allowed only in supervisor mode.
@@ -146,9 +159,12 @@ OpenCode includes a `teacher` primary agent mode in `opencode.json`.
 - It asks students to execute steps and provide evidence.
 - It cannot execute the full reset flow.
 
+For programming subtasks, Jan should suggest switching to `code` mode, apply one small patch, and then return to teacher coaching.
+
 Default: the OpenCode `build` agent is configured to start in this teacher mode behavior.
 
 In OpenCode, use Tab to cycle primary agents and select `teacher`.
+Use Tab to switch to `code` for selective coding help.
 Use `supervisor` mode only for administrative recovery actions like full reset.
 When you open Jan, it guides you through exercises with concise step-by-step coaching.
 

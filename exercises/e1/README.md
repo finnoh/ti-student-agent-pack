@@ -13,7 +13,7 @@ Run one tiny LangChain deep-agent style task:
 ## Suggested run
 
 ```bash
-uv run python work/e1/hello_world.py
+uv run python exercises/e1/hello_world.py
 ```
 
 ## Verification idea
