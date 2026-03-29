@@ -7,6 +7,7 @@ import shutil
 import socket
 import sys
 from dataclasses import dataclass
+from pathlib import Path
 
 
 @dataclass
@@ -14,6 +15,31 @@ class Check:
     name: str
     ok: bool
     detail: str
+
+
+def pack_root() -> Path:
+    return Path(__file__).resolve().parent.parent
+
+
+def apply_dotenv_defaults() -> None:
+    env_path = pack_root() / ".env"
+    if not env_path.exists():
+        return
+
+    try:
+        lines = env_path.read_text(encoding="utf-8", errors="ignore").splitlines()
+    except OSError:
+        return
+
+    for line in lines:
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#") or "=" not in stripped:
+            continue
+        key, value = stripped.split("=", 1)
+        key = key.strip()
+        value = value.strip().strip("\"'")
+        if key and key not in os.environ:
+            os.environ[key] = value
 
 
 def check_python() -> Check:
@@ -48,6 +74,7 @@ def check_dns() -> Check:
 
 
 def main() -> int:
+    apply_dotenv_defaults()
     checks = [
         check_python(),
         check_uv(),
