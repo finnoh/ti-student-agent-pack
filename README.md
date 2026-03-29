@@ -6,8 +6,8 @@ Portable, self-contained workspace for Tinbergen Institute workshop exercises.
 
 Default mode is **Track A (local-first, no GitHub workflow required)**.
 
-- Do exercises in `exercises/E1.md` ... `exercises/E12.md`
-- Submit with `uv run python tools/submit_exercise.py --from-markdown exercises/<EXERCISE_ID>.md`
+- Do exercises in `exercises/01/E01.md` ... `exercises/12/E12.md`
+- Submit with `uv run python tools/submit_exercise.py --from-markdown exercises/<NN>/E<NN>.md`
 - Keep all progress local in this folder
 
 GitHub issues and PRs are optional and only needed for advanced collaboration drills.
@@ -16,8 +16,16 @@ GitHub issues and PRs are optional and only needed for advanced collaboration dr
 
 ### Option 1: One-line Install (Recommended)
 
+Mac/Linux:
+
 ```bash
 curl -sL https://raw.githubusercontent.com/finnoh/ti-student-agent-pack/main/install.sh | bash
+```
+
+Windows PowerShell (no admin, no WSL required):
+
+```powershell
+irm https://raw.githubusercontent.com/finnoh/ti-student-agent-pack/main/install.ps1 | iex
 ```
 
 This will:
@@ -29,14 +37,34 @@ This will:
 6. Configure `opencode.json` with the LangChain docs MCP (`https://docs.langchain.com/mcp`)
 7. Configure MCP defaults for Cursor (`.cursor/mcp.json`) and VS Code (`.vscode/mcp.json`)
 
+Optional automation env vars (for non-interactive installs):
+
+- `TI_NONINTERACTIVE=1` (skip prompts)
+- `TI_OPENROUTER_API_KEY=<key>` (seed OpenRouter key)
+- `TI_CODING_AGENT=opencode|codex|claude|...` (bash installer)
+- `TI_INSTALL_OPENCODE=1|0` (bash installer)
+
 **Requirements:**
-- Git (for cloning)
-- Python 3.10+
-- uv (recommended; auto-detected by installer)
+- Network access
+- Git (recommended; installer has ZIP fallback if git is missing)
+- Python 3.10+ (recommended on Mac/Linux; installer can fall back to uv-managed Python)
+- uv (Mac/Linux: auto-installed if missing; Windows: auto-installed by PowerShell installer)
 
 `gh` (GitHub CLI) is **not required** for Track A.
 
 If you choose `codex` or `claude` during install, the installer also attempts a direct CLI MCP registration for that agent.
+
+## Windows Notes (No Admin)
+
+- You usually do not have Bash by default in Windows terminals.
+- Git Bash provides Bash, but it is optional with this setup.
+- Use `install.ps1` for the most robust no-admin path on Windows.
+- The PowerShell installer uses user-space `uv` + uv-managed Python, so it works even when Python is not preinstalled.
+
+## Mac/Linux Notes
+
+- `install.sh` can now bootstrap `uv` and uv-managed Python when system Python is missing or too old.
+- If `git` is unavailable, installer downloads the repository ZIP as fallback.
 
 ### Option 2: Manual Installation
 
@@ -50,7 +78,7 @@ If you choose `codex` or `claude` during install, the installer also attempts a 
 
 ## What's Included
 
-- **Exercise files (E1-E12)** - Pre-created templates for all workshop exercises
+- **Exercise files (E01-E12)** - Pre-created templates for all workshop exercises
 - **Submission tools** - Python scripts for submitting exercises
 - **Jan coaching agent** (`AGENTS.md`) - Your AI tutor
 - **Progress dashboard** - Track your exercise completion
@@ -83,7 +111,7 @@ Students can override model settings in `.env`, but the installer sets this free
 4. Run `uv sync` once to create `.venv` (if installer did not already do it)
 5. Confirm `.env` contains your `OPENROUTER_API_KEY`
 6. Edit `config/form_config.json` with your Google Form details
-7. Complete `BOOTSTRAP.md` with your information
+7. Complete `USER.md` with your identity details (`name`, `position`, `field_of_study`)
 8. Start working on exercises in the `exercises/` directory
 
 ## Manual Backup Mode
@@ -91,7 +119,7 @@ Students can override model settings in `.env`, but the installer sets this free
 If agent-assisted flow fails, print a fallback packet + manual submission link:
 
 ```bash
-uv run python tools/print_exercise_packet.py --exercise-id E3
+uv run python tools/print_exercise_packet.py --exercise-id E03
 ```
 
 This shows the objective, deliverable target, and the Google Form URL (prefilled with `exercise_id` when field IDs are configured).
@@ -104,12 +132,24 @@ Track all exercises with status symbols:
 uv run python tools/progress_dashboard.py
 ```
 
+Preflight check (recommended before class starts):
+
+```bash
+uv run python tools/preflight_check.py
+```
+
 Legend: blank = not started, `[ ]` = started, `[X]` = submitted.
 
 Sequential recommendation helper:
 
 ```bash
 uv run python tools/recommend_next_exercise.py
+```
+
+Exercise path helper:
+
+```bash
+uv run python tools/exercise_path.py E02
 ```
 
 ## Startup File Hygiene

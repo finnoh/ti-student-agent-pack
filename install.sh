@@ -29,6 +29,17 @@ OPENROUTER_FREE_MODELS=(
     "z-ai/glm-4.5-air:free"
 )
 DEFAULT_CHAT_MODEL="${OPENROUTER_FREE_MODELS[0]}"
+TI_NONINTERACTIVE="${TI_NONINTERACTIVE:-}"
+TI_OPENROUTER_API_KEY="${TI_OPENROUTER_API_KEY:-}"
+TI_CODING_AGENT="${TI_CODING_AGENT:-}"
+TI_INSTALL_OPENCODE="${TI_INSTALL_OPENCODE:-}"
+
+is_noninteractive() {
+    case "${TI_NONINTERACTIVE,,}" in
+        1|true|yes|y) return 0 ;;
+        *) return 1 ;;
+    esac
+}
 
 upsert_env_key() {
     local python_cmd="$1"
@@ -71,13 +82,18 @@ PY
 configure_openrouter_env() {
     local python_cmd="$1"
     local env_path=".env"
-    local api_key=""
+    local api_key="${TI_OPENROUTER_API_KEY}"
 
     print_info "=== OpenRouter Setup ==="
     print_info "Open this URL in your browser: ${OPENROUTER_URL}"
     print_info "Sign up/login, create an API key, then paste it below."
 
-    if [ -r /dev/tty ]; then
+    if [ -n "$api_key" ]; then
+        print_info "Using TI_OPENROUTER_API_KEY from environment."
+    elif is_noninteractive; then
+        print_warning "Non-interactive mode enabled and no TI_OPENROUTER_API_KEY provided."
+        print_warning "Skipping API key prompt. Add OPENROUTER_API_KEY manually to .env"
+    elif [ -r /dev/tty ]; then
         while true; do
             printf "[INFO] Paste your OpenRouter API key: " > /dev/tty
             if ! IFS= read -r -s api_key < /dev/tty; then
@@ -276,6 +292,93 @@ configure_additional_agent_mcp() {
     esac
 }
 
+ensure_uv() {
+    if command -v uv &> /dev/null; then
+        print_success "uv detected"
+        return 0
+    fi
+
+    print_info "uv not found; installing in user space..."
+    if ! command -v curl &> /dev/null; then
+        print_error "curl is required to install uv automatically."
+        print_error "Install uv manually: https://docs.astral.sh/uv/getting-started/installation/"
+        return 1
+    fi
+
+    if curl -LsSf https://astral.sh/uv/install.sh | sh; then
+        export PATH="$HOME/.local/bin:$PATH"
+        if command -v uv &> /dev/null; then
+            print_success "uv installed successfully"
+            return 0
+        fi
+    fi
+
+    print_error "Failed to install uv automatically."
+    print_error "Install uv manually, then rerun installer."
+    return 1
+}
+
+clone_or_download_repo() {
+    local repo_url="$1"
+    local target_dir="$2"
+
+    if command -v git &> /dev/null; then
+        print_info "Cloning repository from GitHub..."
+        if git clone "$repo_url" "$target_dir"; then
+            print_success "Repository cloned successfully"
+            return 0
+        fi
+        print_warning "git clone failed; trying ZIP fallback..."
+    else
+        print_warning "git not found; using ZIP download fallback."
+    fi
+
+    if ! command -v curl &> /dev/null; then
+        print_error "curl is required for ZIP fallback download."
+        return 1
+    fi
+
+    local zip_url="https://github.com/finnoh/ti-student-agent-pack/archive/refs/heads/main.zip"
+    local zip_file="ti-student-agent-pack-main.zip"
+    local extracted_dir="ti-student-agent-pack-main"
+
+    print_info "Downloading repository ZIP..."
+    if ! curl -fsSL "$zip_url" -o "$zip_file"; then
+        print_error "Failed to download repository ZIP."
+        return 1
+    fi
+
+    if command -v unzip &> /dev/null; then
+        if ! unzip -q "$zip_file"; then
+            print_error "Failed to extract repository ZIP with unzip."
+            return 1
+        fi
+    elif command -v tar &> /dev/null; then
+        if ! tar -xf "$zip_file"; then
+            print_error "Failed to extract repository ZIP with tar."
+            return 1
+        fi
+    else
+        print_error "Need either unzip or tar to extract ZIP fallback download."
+        return 1
+    fi
+
+    rm -f "$zip_file"
+
+    if [ ! -d "$extracted_dir" ]; then
+        print_error "Expected extracted directory '$extracted_dir' not found."
+        return 1
+    fi
+
+    if ! mv "$extracted_dir" "$target_dir"; then
+        print_error "Failed to move extracted folder to '$target_dir'."
+        return 1
+    fi
+
+    print_success "Repository downloaded and extracted successfully"
+    return 0
+}
+
 install_local_git_hook() {
     print_info "Installing local pre-push hook for STARTUP.md and exercise-script hygiene..."
 
@@ -303,12 +406,6 @@ install_local_git_hook() {
 
 print_info "=== TI Student Agent Pack Installer ==="
 
-# Check if git is available
-if ! command -v git &> /dev/null; then
-    print_error "git is not installed. Please install git first."
-    exit 1
-fi
-
 # Clone the repository
 REPO_URL="https://github.com/finnoh/ti-student-agent-pack.git"
 TARGET_DIR="student-agent-pack"
@@ -319,52 +416,68 @@ if [ -d "$TARGET_DIR" ]; then
     exit 1
 fi
 
-print_info "Cloning repository from GitHub..."
-if git clone "$REPO_URL" "$TARGET_DIR"; then
-    print_success "Repository cloned successfully"
-else
-    print_error "Failed to clone repository"
+if ! clone_or_download_repo "$REPO_URL" "$TARGET_DIR"; then
+    print_error "Failed to acquire repository contents."
     exit 1
 fi
 
 # Change to the directory
 cd "$TARGET_DIR" || exit 1
 
-# Check for Python
-print_info "Checking Python installation..."
+# Check for Python (optional if uv-managed Python is used)
+print_info "Checking system Python installation..."
+PYTHON_CMD=""
 if command -v python3 &> /dev/null; then
     PYTHON_CMD="python3"
-    PYTHON_VERSION=$(python3 -V 2>&1 | cut -d' ' -f2)
-    print_info "Found Python $PYTHON_VERSION"
 elif command -v python &> /dev/null; then
     PYTHON_CMD="python"
-    PYTHON_VERSION=$(python -V 2>&1 | cut -d' ' -f2)
-    print_info "Found Python $PYTHON_VERSION"
-else
-    print_error "Python not found. Please install Python 3.10+"
-    exit 1
 fi
 
-# Check Python version
-PYTHON_MAJOR=$(echo "$PYTHON_VERSION" | cut -d. -f1)
-PYTHON_MINOR=$(echo "$PYTHON_VERSION" | cut -d. -f2)
-if [ "$PYTHON_MAJOR" -lt 3 ] || ([ "$PYTHON_MAJOR" -eq 3 ] && [ "$PYTHON_MINOR" -lt 10 ]); then
-    print_error "Python 3.10+ is required. Found Python $PYTHON_VERSION"
-    exit 1
-fi
-
-# Create uv environment when available
-USE_UV="false"
-if command -v uv &> /dev/null; then
-    print_info "Setting up project virtual environment with uv..."
-    if uv sync; then
-        USE_UV="true"
-        print_success "uv environment ready (.venv/)"
+if [ -n "$PYTHON_CMD" ]; then
+    PYTHON_VERSION=$($PYTHON_CMD -V 2>&1 | cut -d' ' -f2)
+    PYTHON_MAJOR=$(echo "$PYTHON_VERSION" | cut -d. -f1)
+    PYTHON_MINOR=$(echo "$PYTHON_VERSION" | cut -d. -f2)
+    if [ "$PYTHON_MAJOR" -lt 3 ] || ([ "$PYTHON_MAJOR" -eq 3 ] && [ "$PYTHON_MINOR" -lt 10 ]); then
+        print_warning "Found Python $PYTHON_VERSION (<3.10). Will use uv-managed Python instead."
+        PYTHON_CMD=""
     else
-        print_warning "uv sync failed; continuing with system Python"
+        print_info "Found Python $PYTHON_VERSION"
     fi
 else
-    print_warning "uv not found; using system Python. Install uv for reproducible envs."
+    print_warning "No system Python found. Will use uv-managed Python."
+fi
+
+# Ensure uv exists (bootstrap in user space when needed)
+if ! ensure_uv; then
+    exit 1
+fi
+
+# Create uv environment
+USE_UV="false"
+print_info "Installing uv-managed Python 3.11 (if needed)..."
+if ! uv python install 3.11 >/dev/null 2>&1; then
+    print_warning "Could not preinstall uv Python 3.11. uv sync may still succeed with available Python."
+fi
+
+print_info "Setting up project virtual environment with uv..."
+if uv sync; then
+    USE_UV="true"
+    print_success "uv environment ready (.venv/)"
+    if [ -x ".venv/bin/python" ]; then
+        PYTHON_CMD=".venv/bin/python"
+    fi
+else
+    if [ -n "$PYTHON_CMD" ]; then
+        print_warning "uv sync failed; continuing with system Python ($PYTHON_CMD)."
+    else
+        print_error "uv sync failed and no usable system Python was found."
+        exit 1
+    fi
+fi
+
+if [ -z "$PYTHON_CMD" ]; then
+    print_error "No usable Python interpreter found after setup."
+    exit 1
 fi
 
 # Initialize exercises
@@ -391,17 +504,28 @@ CODING_AGENT_LOWER=""
 response="n"
 OPENCODE_INSTALLED="false"
 
-if [ -r /dev/tty ]; then
+if [ -n "$TI_CODING_AGENT" ]; then
+    CODING_AGENT="$TI_CODING_AGENT"
+    CODING_AGENT_LOWER=$(printf '%s' "$CODING_AGENT" | tr '[:upper:]' '[:lower:]')
+fi
+
+if [ -n "$TI_INSTALL_OPENCODE" ]; then
+    response="$TI_INSTALL_OPENCODE"
+fi
+
+if is_noninteractive; then
+    print_info "Non-interactive mode: skipping coding-agent prompt."
+elif [ -r /dev/tty ]; then
     printf "[INFO] What is your coding agent (opencode, codex, claude, cursor-agent, ...)? " > /dev/tty
     if ! IFS= read -r CODING_AGENT < /dev/tty; then
         CODING_AGENT=""
     fi
     CODING_AGENT_LOWER=$(printf '%s' "$CODING_AGENT" | tr '[:upper:]' '[:lower:]')
 
-    if [ "$CODING_AGENT_LOWER" = "opencode" ]; then
+    if [ "$CODING_AGENT_LOWER" = "opencode" ] && [ -z "$TI_INSTALL_OPENCODE" ]; then
         print_info "Coding agent is opencode; skipping install prompt and proceeding with OpenCode install check."
         response="y"
-    else
+    elif [ -z "$TI_INSTALL_OPENCODE" ]; then
         printf "[INFO] Would you like to install OpenCode now? (y/N) " > /dev/tty
         if ! IFS= read -r response < /dev/tty; then
             response="n"
@@ -411,7 +535,7 @@ else
     print_info "No interactive terminal detected; skipping coding-agent and OpenCode prompts."
 fi
 
-if [[ "$response" =~ ^[Yy]$ ]]; then
+if [[ "$response" =~ ^[Yy]$|^[Tt][Rr][Uu][Ee]$|^1$ ]]; then
     print_info "Installing OpenCode..."
     if curl -fsSL https://opencode.ai/install | bash; then
         print_success "OpenCode installed successfully!"
