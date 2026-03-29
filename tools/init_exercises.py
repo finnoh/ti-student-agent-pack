@@ -4,79 +4,88 @@ import argparse
 from pathlib import Path
 
 EXERCISE_META = {
-    "E1": {
-        "title": "OpenRouter + deep-agent setup",
-        "objective": "Configure OpenRouter defaults and run one verified deep-agent test.",
-        "deliverable": "Setup note with selected default model and successful run output.",
+    "E01": {
+        "title": "Setup Jan + OpenRouter + hello world",
+        "objective": "Complete minimum setup evidence first, then run one verified LangChain hello-world task if time allows.",
+        "deliverable": "Minimum startup evidence + Jan response; full submission adds hello-world run, manual verification, and customization note.",
         "failure_risk": "API key or base URL mismatch in .env.",
     },
-    "E2": {
-        "title": "Deep-agent prompt design",
-        "objective": "Draft a deep-agent prompt and tool-routing rules for one task.",
-        "deliverable": "Prompt spec and a concise routing decision table.",
-        "failure_risk": "Prompt leaves tool-choice policy ambiguous.",
+    "E02": {
+        "title": "Prompt anatomy in LangChain code",
+        "objective": "Run a first LangChain prompt, solve country extraction, and return structured Python output.",
+        "deliverable": "Runnable snippet returning a cleaned Python list plus short orientation note (minimum one takeaway, optional blackjack extension).",
+        "failure_risk": "Output format drifts away from strict Python list requirements.",
     },
-    "E3": {
-        "title": "LangChain deep-agent coding sprint",
-        "objective": "Implement one deep-agent component with docs-backed API usage.",
-        "deliverable": "Patch summary and verification trace.",
-        "failure_risk": "API mismatch from skipping docs lookup.",
+    "E03": {
+        "title": "Context pipeline with retrieval",
+        "objective": "Build a small local corpus and compare baseline no-context answer with retrieval-assisted answer.",
+        "deliverable": "A/B note with one failure fixed by retrieval, one quoted source chunk, and one boundary disclosure.",
+        "failure_risk": "A/B comparison is not fair because prompts differ across runs.",
     },
-    "E4": {
-        "title": "Structured output and verification",
-        "objective": "Create one verifiable structured output for a deep-agent step.",
-        "deliverable": "Schema plus validated sample output.",
-        "failure_risk": "Schema does not constrain risky model behavior.",
+    "E04": {
+        "title": "Tool-calling mini-agent",
+        "objective": "Integrate at least one existing tool with a no-auth fallback and run an agent that uses two tools in one workflow.",
+        "deliverable": "Tool trace + one output plausibility check + one failure-mode note.",
+        "failure_risk": "Agent answers directly without actually using both tools.",
     },
-    "E5": {
-        "title": "Design deep-agent workflow",
-        "objective": "Design a reliability-aware agent workflow.",
-        "deliverable": "Architecture sketch with fallback and escalation path.",
-        "failure_risk": "Missing human handoff for high-risk steps.",
+    "E05": {
+        "title": "Build and connect a tiny MCP tool",
+        "objective": "Implement one tiny custom tool, define I/O contract, and connect it to a simple workflow.",
+        "deliverable": "Tool demo (input -> output -> explanation) plus sanity check and handled error case.",
+        "failure_risk": "Tool interface is unclear or lacks basic argument validation.",
     },
-    "E6": {
-        "title": "Memory-enabled deep-agent pipeline",
-        "objective": "Draft a mini deep-agent pipeline with memory and explicit limits.",
-        "deliverable": "Protocol note and sample artifacts.",
-        "failure_risk": "Overstating confidence from synthetic outputs.",
+    "E06": {
+        "title": "Memory behavior: session + retrieval",
+        "objective": "Define memory policy and demonstrate short-term and retriever-backed memory behavior.",
+        "deliverable": "Trace with remembered preference, retrieved project fact, and risk note.",
+        "failure_risk": "Memory claims are not supported by clear run evidence.",
     },
-    "E7": {
-        "title": "Compare free OpenRouter models",
-        "objective": "Compare two free-model outputs with a controlled protocol.",
-        "deliverable": "Scored table and short adoption memo.",
-        "failure_risk": "Settings drift between model runs.",
+    "E07": {
+        "title": "Ideation project + idea napkin",
+        "objective": "Run the ideation pipeline with researcher context and produce at least two idea napkins.",
+        "deliverable": "Selected lead idea napkin + domain scorecard comparison + IP/HARKING caution.",
+        "failure_risk": "Idea remains too broad to test within available data constraints.",
     },
-    "E8": {
-        "title": "Deep-agent resilience protocol",
-        "objective": "Create a personal verification protocol for deep-agent use.",
-        "deliverable": "One-page protocol with trigger rules.",
-        "failure_risk": "Protocol stays generic and non-actionable.",
+    "E08": {
+        "title": "AI data-collection design memo",
+        "objective": "Choose exactly one mode (A/B/C) and design a credible collection protocol with one prototype artifact.",
+        "deliverable": "One-page memo with mode choice, threat model, verification plan, and prototype artifact reference.",
+        "failure_risk": "Mode choice is not linked to a clear validity-risk mitigation plan.",
     },
-    "E9": {
+    "E09": {
         "title": "Evidence paragraph + claim ledger",
-        "objective": "Produce one evidence-backed paragraph with traceable claims.",
-        "deliverable": "Paragraph plus claim-evidence ledger.",
-        "failure_risk": "Claims are not traceable to sources.",
+        "objective": "Produce one evidence-backed paragraph with traceable claims and a journal-policy note.",
+        "deliverable": "Paragraph plus claim/source/snippet/confidence/gap ledger (minimum two claims) and one unresolved gap.",
+        "failure_risk": "Claims are not clearly linked to source snippets.",
     },
     "E10": {
-        "title": "Reproducible analysis loop",
-        "objective": "Run prompt -> code -> run -> test -> fix with a keep/reject decision.",
-        "deliverable": "Minimal code, executable check output, and verification note.",
+        "title": "Reproducible analysis loop in VS Code",
+        "objective": "Compare direct prompting to prompt -> code -> run -> test -> fix with a keep/reject decision.",
+        "deliverable": "Minimal code, executable check output, verification note, and AI provenance note.",
         "failure_risk": "No executable test evidence.",
     },
     "E11": {
-        "title": "Issue -> agent -> PR workflow",
-        "objective": "Practice safe issue-to-agent-to-PR collaboration.",
-        "deliverable": "Issue text, handoff prompt, and PR review verdict.",
+        "title": "Issue -> agent -> PR workflow drill",
+        "objective": "Practice safe issue-to-agent-to-PR collaboration with explicit acceptance criteria.",
+        "deliverable": "Issue text, handoff prompt, review verdict, and PR link or simulated PR record.",
         "failure_risk": "No explicit human checkpoint.",
     },
     "E12": {
         "title": "Writing + syndication sprint",
         "objective": "Convert notes into a short brief and syndication plan.",
-        "deliverable": "300-500 word brief, 3-channel plan, and disclosure note.",
+        "deliverable": "300-500 word brief, 3-channel plan, and disclosure note (optional web-ready draft).",
         "failure_risk": "Output is generic and not audience-specific.",
     },
 }
+
+
+def exercise_folder(exercise_id: str) -> str:
+    number = int(exercise_id[1:])
+    return f"{number:02d}"
+
+
+def exercise_code(number: int) -> str:
+    return f"E{number:02d}"
 
 
 def build_file_content(exercise_id: str, student_name: str) -> str:
@@ -94,13 +103,14 @@ def build_file_content(exercise_id: str, student_name: str) -> str:
         "- [ ] Subtask 1\n"
         "- [ ] Subtask 2\n"
         "- [ ] Subtask 3\n\n"
+        "## Verification method\n\n"
         "## Final response\n\n"
         "## Iteration notes\n\n"
     )
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Initialize prefilled markdown files for E1-E12")
+    parser = argparse.ArgumentParser(description="Initialize prefilled markdown files for E01-E12")
     parser.add_argument("--student-name", default="", help="Student name used in front matter")
     parser.add_argument(
         "--exercises-dir",
@@ -119,15 +129,18 @@ def main() -> int:
 
     student_name = args.student_name.strip() or ""
 
-    for exercise_id in [f"E{i}" for i in range(1, 13)]:
-        file_path = target_dir / f"{exercise_id}.md"
+    for i in range(1, 13):
+        exercise_id = exercise_code(i)
+        exercise_dir = target_dir / exercise_folder(exercise_id)
+        exercise_dir.mkdir(parents=True, exist_ok=True)
+        file_path = exercise_dir / f"{exercise_id}.md"
         if file_path.exists() and not args.overwrite:
             skipped += 1
             continue
         file_path.write_text(build_file_content(exercise_id, student_name), encoding="utf-8")
         created += 1
 
-    print("Initialized exercise files E1-E12.")
+    print("Initialized exercise files E01-E12.")
     print(f"Created: {created}")
     print(f"Skipped: {skipped}")
     print(f"Location: {target_dir}")

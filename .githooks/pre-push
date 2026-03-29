@@ -4,6 +4,7 @@ set -euo pipefail
 ROOT_DIR="$(git rev-parse --show-toplevel)"
 STARTUP_SCRIPT="$ROOT_DIR/tools/strip_startup_complete.py"
 EXERCISE_SCRIPT="$ROOT_DIR/tools/strip_exercise_scripts.py"
+IDENTITY_SCRIPT="$ROOT_DIR/tools/strip_student_identity.py"
 STARTUP_FILE="$ROOT_DIR/STARTUP.md"
 
 if [ ! -f "$STARTUP_FILE" ] || [ ! -f "$STARTUP_SCRIPT" ]; then
@@ -25,6 +26,15 @@ if [ -f "$EXERCISE_SCRIPT" ]; then
   if ! git diff --quiet -- ":(glob)exercises/**/*.py"; then
     echo "[pre-push] Exercise Python scripts were reset to template form."
     echo "[pre-push] Commit these reset changes, then push again."
+    exit 1
+  fi
+fi
+
+if [ -f "$IDENTITY_SCRIPT" ]; then
+  python3 "$IDENTITY_SCRIPT" >/dev/null
+  if ! git diff --quiet -- ":(glob)exercises/**/E*.md"; then
+    echo "[pre-push] Submission drafts had student_name fields cleaned."
+    echo "[pre-push] Commit these changes, then push again."
     exit 1
   fi
 fi

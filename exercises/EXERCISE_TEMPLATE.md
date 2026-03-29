@@ -1,5 +1,5 @@
 ---
-exercise_id: E1
+exercise_id: E01
 student_name:
 ---
 
@@ -12,6 +12,8 @@ Default pattern: LangChain deep-agent with OpenRouter backend.
 - [ ] Subtask 1
 - [ ] Subtask 2
 - [ ] Subtask 3
+
+## Verification method
 
 ## Final response
 

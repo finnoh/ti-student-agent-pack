@@ -4,7 +4,7 @@ import json
 import re
 from pathlib import Path
 
-EXERCISES = [f"E{i}" for i in range(1, 13)]
+EXERCISES = [f"E{i:02d}" for i in range(1, 13)]
 WIDTH = 74
 
 
@@ -56,13 +56,31 @@ def has_started(work_file: Path) -> bool:
     return False
 
 
+def normalize_exercise_id(value: str) -> str:
+    ex = value.strip().upper()
+    if not ex.startswith("E"):
+        raise ValueError("exercise id must start with E")
+    number = ex[1:]
+    if not number.isdigit():
+        raise ValueError("exercise id must end with a number")
+    numeric = int(number)
+    if numeric < 1 or numeric > 12:
+        raise ValueError("exercise id must be between E01 and E12")
+    return f"E{numeric:02d}"
+
+
 def _receipt_success_for_exercise(receipt_path: Path, exercise_id: str) -> bool:
     try:
         data = json.loads(receipt_path.read_text(encoding="utf-8"))
     except Exception:
         return False
     submission = data.get("submission", {})
-    if str(submission.get("exercise_id", "")).upper() != exercise_id:
+    raw_exercise = str(submission.get("exercise_id", "")).upper()
+    try:
+        saved_exercise = normalize_exercise_id(raw_exercise)
+    except ValueError:
+        return False
+    if saved_exercise != exercise_id:
         return False
     return bool(data.get("success", False))
 
@@ -77,6 +95,15 @@ def has_submitted(base_dir: Path, exercise_id: str) -> bool:
     return False
 
 
+def exercise_folder(exercise_id: str) -> str:
+    number = int(exercise_id[1:])
+    return f"{number:02d}"
+
+
+def exercise_markdown_path(exercises_dir: Path, exercise_id: str) -> Path:
+    return exercises_dir / exercise_folder(exercise_id) / f"{exercise_id}.md"
+
+
 def main() -> int:
     base = Path(__file__).resolve().parent.parent
     exercises_dir = base / "exercises"
@@ -85,7 +112,7 @@ def main() -> int:
     unstarted = []
 
     for ex in EXERCISES:
-        started = has_started(exercises_dir / f"{ex}.md")
+        started = has_started(exercise_markdown_path(exercises_dir, ex))
         submitted = has_submitted(base, ex)
         if submitted:
             continue
@@ -113,9 +140,9 @@ def main() -> int:
     print(row(" Suggested prompt to student:"))
 
     if suggested_continue:
-        print(row(f" Continue {suggested_continue}, or start {suggested_start or 'E1'}?"))
+        print(row(f" Continue {suggested_continue}, or start {suggested_start or 'E01'}?"))
     elif suggested_start:
-        print(row(f" Start with E1, or jump to {suggested_latest_unstarted}?"))
+        print(row(f" Start with E01, or jump to {suggested_latest_unstarted}?"))
     else:
         print(row(" You can review any exercise or start an extension task."))
 

@@ -1,7 +1,15 @@
-name: Finn (course administrator)
-study_focus: AI methods for innovation and market research
-ai_agent_experience: advanced (wants to practice with a student mindset)
-coaching_preferences:
-  - concise
-  - verification-first
-  - progressive hints before worked examples
+# BOOTSTRAP
+
+Use this file for quick session bootstrap notes.
+
+Primary user identity lives in `USER.md` frontmatter:
+
+- `name`
+- `position`
+- `field_of_study`
+
+Recommended bootstrap notes here:
+
+- current exercise target
+- tooling status
+- coaching preferences

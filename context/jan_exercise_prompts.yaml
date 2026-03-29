@@ -1,39 +1,75 @@
 version: 1
 source: student-agent-pack
+defaults:
+  coding_stack: LangChain
+  llm_backend: OpenRouter
+  openai_base_url: https://openrouter.ai/api/v1
+  api_key_env_var: OPENROUTER_API_KEY
 prompts:
-  E1: |
-    Guide setup in five steps: environment check, API key check, first hello-world run,
-    manual verification, submission.
+  E01: |
+    Guide setup in five steps: environment check, API key check, startup evidence,
+    optional hello-world run, submission.
+    Minimum completion is startup check + one Jan response proving agent is live.
     Ask one concrete action per step and require student evidence before advancing.
-  E2: |
+  E02: |
     Guide students through: first LangChain prompt run, country-extraction prompt,
     structured output as Python list, short docs/model orientation, verification, submission.
     Keep CS jargon light and practical.
-  E3: |
+    Orientation minimum is one practical takeaway (more is optional).
+    Optional extension: run Dealer/Gambler/Referee multi-agent blackjack demo.
+    If extension is used, require explicit standard rules in output:
+    card values (2-10, face=10, Ace=1/11), initial deal (2 player, 2 dealer with one upcard),
+    player hit/stand, bust >21, dealer reveals and hits until 17+, blackjack precedence,
+    and push on equal totals.
+  E03: |
     Run an A/B comparison: baseline (no retrieval) vs retrieval-enhanced output.
-    Require one concrete failure fixed by retrieval.
-  E4: |
-    Build a two-tool flow. Confirm tool signatures first, then run one query that needs both tools,
-    and verify output plausibility.
-  E5: |
-    Build one tiny tool service, wire it, run one success case and one sanity check.
+    First confirm a local corpus of 4-6 short files exists in exercises/03.
+    Require one concrete failure fixed by retrieval, one quoted source chunk,
+    and one privacy/copyright boundary disclosure.
+    Use folder `exercises/03/` and submission draft `exercises/03/E03.md`.
+  E04: |
+    Build a two-tool integration flow.
+    Encourage one existing tool relevant to business/econ research (arXiv, Zotero, etc.).
+    Require a no-auth local fallback path if external tool setup fails.
+    Confirm tool signatures first, run one query that needs both tools,
+    verify output plausibility, and capture one failure mode.
+    Use `exercises/04/tool_agent.py` and trace notes in `exercises/04/tool_trace_notes.md`.
+  E05: |
+    Build one tiny custom tool, define input/output contract, wire it,
+    run one success case, one sanity check, and one explicit error path.
     Keep implementation minimal and debuggable.
-  E6: |
+    Use `exercises/05/tiny_tool.py` and document checks in `exercises/05/sanity_notes.md`.
+  E06: |
     Separate short-term memory and retriever-backed memory.
-    Require one remembered preference, one retrieved fact, and one risk note.
-  E7: |
+    Require one remembered preference, one retrieved project fact, and one risk note.
+    Align AGENTS.md, MEMORY.md, and PROJECT_BACKGROUND.md behavior.
+    Use `exercises/06/memory_policy.md` and `exercises/06/memory_demo.py`.
+  E07: |
+    Start with researcher context (methods, data access, constraints).
     Use explore -> select -> immerse -> question -> idea napkin.
-    Require one domain scorecard and one IP/HARKING caution.
-  E8: |
-    Pick mode A/B/C explicitly, justify trade-offs, and provide one concrete verification plan.
-  E9: |
+    Require domain scorecard across >=2 domains, >=2 idea napkins, and one IP/HARKING caution.
+    Use `exercises/07/domain_scorecard.md` and `exercises/07/idea_napkin.md`.
+  E08: |
+    Pick exactly one mode (A or B or C), justify trade-offs,
+    provide one concrete verification plan, and create one tiny prototype artifact.
+    Use `exercises/08/design_memo.md`.
+  E09: |
     Produce one evidence paragraph and a claim ledger (claim/source/snippet/confidence/gap).
-    Require one unresolved gap disclosure.
+    Minimum evidence target: two papers and two claims.
+    Require one journal-policy note on AI-assisted literature use and one unresolved gap disclosure.
+    Use `exercises/09/evidence_paragraph.md` and `exercises/09/claim_ledger.md`.
   E10: |
-    Enforce prompt -> code -> run -> test -> fix loop with one keep/reject decision.
-    Require executable evidence.
+    Compare direct-prompt baseline against prompt -> code -> run -> test -> fix loop.
+    Require executable evidence, one keep/reject decision, and AI provenance note (model/date).
+    Use `exercises/10/analysis.py`, `exercises/10/test_analysis.py`, and `exercises/10/E10.md`.
   E11: |
-    Produce issue text, handoff prompt, PR review checklist, and verdict.
+    Produce scoped issue text (with acceptance criteria), handoff prompt,
+    PR review checklist, and verdict.
+    Accept realistic simulated PR records when permissions block real PRs.
     Emphasize human checkpoints and auditability.
+    Use templates in `exercises/11/`.
   E12: |
-    Convert rough notes to a short brief, 3-channel syndication plan, and AI-disclosure statement.
+    Convert rough notes to a short brief, 3-channel syndication plan,
+    and AI-disclosure statement.
+    Web-ready page draft is optional extension work.
+    Use templates in `exercises/12/`.

@@ -1,51 +1,52 @@
-# Exercise Catalog (E1-E12)
+# Exercise Catalog (E01-E12)
 
 Use this catalog for fast exercise routing and concise coaching.
 
-## E1 - Setup Jan + OpenRouter + hello world
-- Objective: Install pack, configure OpenRouter key, run first LangChain deep-agent task.
-- Deliverable: Setup evidence + hello-world run log + one Jan customization note.
+## E01 - Setup Jan + OpenRouter + hello world
+- Objective: Get setup operational with a minimum viable check, then run optional hello-world coding if time allows.
+- Deliverable: Minimum startup evidence + Jan response; full submission adds hello-world run, manual verification, and customization note.
 
-## E2 - Prompt anatomy in LangChain code
-- Objective: Run a first LangChain prompt, solve country extraction from noisy text, and add a quick model/docs orientation.
-- Deliverable: Runnable snippet returning a Python list of cleaned country names plus a short orientation note.
+## E02 - Prompt anatomy in LangChain code
+- Objective: Turn a noisy extraction task into structured Python output and document one model/docs rationale.
+- Deliverable: Runnable snippet returning cleaned country names as a Python list plus a short orientation note.
+- Optional extension: Dealer/Gambler/Referee blackjack mini-demo with explicit standard rules.
 
-## E3 - Context pipeline with retrieval
-- Objective: Compare no-context baseline vs retrieval-based context.
-- Deliverable: A/B note with one failure fixed by retrieval.
+## E03 - Context pipeline with retrieval
+- Objective: Build a tiny local corpus and run a fair A/B test (no retrieval vs retrieval) on the same question.
+- Deliverable: A/B note with one baseline failure fixed by retrieval, one quoted source chunk, and one boundary disclosure.
 
-## E4 - Tool-calling mini-agent
-- Objective: Build an agent that calls at least two tools.
-- Deliverable: Run trace proving tool selection + one verification check.
+## E04 - Tool-calling mini-agent
+- Objective: Integrate at least one existing tool and define a no-auth local fallback for a two-tool, multi-step research question.
+- Deliverable: Tool trace proving tool selection, one verification check, and one failure-mode note.
 
-## E5 - Build and connect tiny MCP tool
-- Objective: Build one tiny tool service and connect it to agent workflow.
-- Deliverable: Input -> tool output -> agent explanation demo + sanity check.
+## E05 - Build and connect tiny MCP tool
+- Objective: Build one tiny custom tool, define input/output contract, and wire it into an agent workflow.
+- Deliverable: Input -> tool output -> agent explanation demo with one sanity check and one handled error case.
 
-## E6 - Memory behavior: session + retrieval
-- Objective: Demonstrate short-term and retriever-backed long-term memory.
-- Deliverable: Chat trace with remembered preference, retrieved fact, and risk note.
+## E06 - Memory behavior: session + retrieval
+- Objective: Define memory policy and show short-term vs long-term retrieval behavior from agent interaction.
+- Deliverable: Chat trace with remembered preference, retrieved project fact, and one memory risk disclosure.
 
-## E7 - Ideation project + idea napkin
-- Objective: Run explore -> select -> immerse -> question -> napkin workflow.
-- Deliverable: Idea napkin + domain scorecard + one IP/HARKING caution.
+## E07 - Ideation project + idea napkin
+- Objective: Use researcher context + domain scoring to generate and select among at least two idea napkins.
+- Deliverable: Selected lead idea napkin, domain scorecard comparison, and one IP/HARKING caution.
 
-## E8 - AI data-collection design memo
-- Objective: Choose mode A/B/C and design a credible protocol.
-- Deliverable: One-page memo with mode choice, threat model, and verification plan.
+## E08 - AI data-collection design memo
+- Objective: Choose exactly one mode (A/B/C) for a research question and produce a validity-aware prototype.
+- Deliverable: One-page memo with mode choice, threat model, verification plan, and one prototype artifact reference.
 
-## E9 - Evidence paragraph + claim ledger
-- Objective: Produce one evidence-backed paragraph with traceable claims.
-- Deliverable: Paragraph + claim/source/snippet/confidence/gap ledger.
+## E09 - Evidence paragraph + claim ledger
+- Objective: Produce auditable synthesis with journal-policy check and claim-to-source traceability.
+- Deliverable: Evidence paragraph + claim ledger (minimum two claims) + one policy note + one unresolved gap.
 
 ## E10 - Reproducible analysis loop
-- Objective: Run prompt -> code -> run -> test -> fix loop with keep/reject decision.
-- Deliverable: Minimal code + executable check output + verification note.
+- Objective: Compare direct-prompt coding vs test-first loop and document a keep/reject decision.
+- Deliverable: Minimal code + executable checks + limitation note + keep/reject comparison + AI provenance note.
 
 ## E11 - Issue -> agent -> PR workflow drill
-- Objective: Practice safe agent collaboration workflow.
-- Deliverable: Issue text + handoff prompt + PR review verdict.
+- Objective: Write a scoped feature issue, hand off to an agent, and review PR output with human checkpoints.
+- Deliverable: Issue text + handoff prompt + review verdict + PR link or simulated PR record.
 
 ## E12 - Writing + syndication sprint
-- Objective: Convert rough notes into a short research brief and syndication plan.
-- Deliverable: 300-500 word brief + 3-channel plan + disclosure note.
+- Objective: Convert rough notes into a short brief and a minimal dissemination setup.
+- Deliverable: 300-500 word brief + 3-channel plan + disclosure note (optional web-ready page draft).

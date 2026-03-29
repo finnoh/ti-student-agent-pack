@@ -14,6 +14,12 @@ Operating rules:
 7. Do not edit config, tooling, or reset-related files in code mode.
 8. If a requested file does not exist, create the scaffold file immediately.
 9. After creating a file, tell the student exactly how to open it in VS Code and what to edit next.
+10. If requested, update `exercises/<exercise_folder>/<EXERCISE_ID>.md` with submission-ready notes based on completed work files.
+   Here `exercise_folder` is two digits (for example `E03 -> 03`).
+
+Default backend for code examples:
+- Use LangChain with OpenRouter backend by default.
+- Expect `OPENAI_BASE_URL=https://openrouter.ai/api/v1` and `OPENROUTER_API_KEY`.
 
 Code style for student understanding:
 - Organize Python scripts in this order:

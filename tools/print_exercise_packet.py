@@ -15,15 +15,33 @@ def default_config_path() -> Path:
     return pack_root() / "config" / "form_config.json"
 
 
+def normalize_exercise_id(value: str) -> str:
+    exercise_id = value.strip().upper()
+    if not exercise_id.startswith("E"):
+        raise ValueError("exercise id must start with E")
+    number = exercise_id[1:]
+    if not number.isdigit():
+        raise ValueError("exercise id must end with a number")
+    numeric = int(number)
+    if numeric < 1 or numeric > 12:
+        raise ValueError("exercise id must be between E01 and E12")
+    return f"E{numeric:02d}"
+
+
+def exercise_folder(exercise_id: str) -> str:
+    number = int(exercise_id[1:])
+    return f"{number:02d}"
+
+
 def default_exercise_path(exercise_id: str) -> Path:
-    return pack_root() / "exercises" / f"{exercise_id}.md"
+    return pack_root() / "exercises" / exercise_folder(exercise_id) / f"{exercise_id}.md"
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Print an exercise packet and manual Google Form submission link."
     )
-    parser.add_argument("--exercise-id", required=True, help="Exercise ID like E1, E2, ...")
+    parser.add_argument("--exercise-id", required=True, help="Exercise ID like E01, E02, ...")
     parser.add_argument("--config", default=str(default_config_path()), help="Path to form config JSON")
     parser.add_argument("--exercise-file", default="", help="Path to exercise markdown file")
     parser.add_argument("--work-file", default="", help="Deprecated alias for --exercise-file")
@@ -89,9 +107,10 @@ def build_prefilled_url(form_url: str, exercise_field_id: str, exercise_id: str)
 
 def main() -> int:
     args = parse_args()
-    exercise_id = args.exercise_id.strip().upper()
-    if not exercise_id.startswith("E"):
-        print("ERROR: --exercise-id must look like E1, E2, ...")
+    try:
+        exercise_id = normalize_exercise_id(args.exercise_id)
+    except ValueError as exc:
+        print(f"ERROR: {exc}")
         return 2
 
     selected_file = args.exercise_file or args.work_file

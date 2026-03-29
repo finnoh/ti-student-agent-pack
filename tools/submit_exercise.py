@@ -44,6 +44,25 @@ def default_bootstrap_path() -> Path:
     return Path(__file__).resolve().parent.parent / "BOOTSTRAP.md"
 
 
+def default_user_path() -> Path:
+    return Path(__file__).resolve().parent.parent / "USER.md"
+
+
+def normalize_exercise_id(value: str) -> str:
+    exercise_id = value.strip().upper()
+    if not exercise_id:
+        return ""
+    if not exercise_id.startswith("E"):
+        return exercise_id
+    number = exercise_id[1:]
+    if not number.isdigit():
+        return exercise_id
+    numeric = int(number)
+    if numeric < 1 or numeric > 12:
+        return exercise_id
+    return f"E{numeric:02d}"
+
+
 def load_config(path: Path) -> dict:
     if not path.exists():
         return {"google_form_url": "", "field_ids": {}}
@@ -151,6 +170,25 @@ def load_submitter_name(path: Path) -> str:
     if not path.exists():
         return ""
     text = path.read_text(encoding="utf-8")
+
+    if text.lstrip().startswith("---"):
+        lines = text.splitlines()
+        start = 0
+        while start < len(lines) and not lines[start].strip():
+            start += 1
+        if start < len(lines) and lines[start].strip() == "---":
+            for idx in range(start + 1, len(lines)):
+                line = lines[idx].strip()
+                if line == "---":
+                    break
+                if ":" not in line:
+                    continue
+                key, value = line.split(":", 1)
+                if key.strip().lower() == "name":
+                    candidate = value.strip()
+                    if candidate:
+                        return candidate
+
     for raw_line in text.splitlines():
         line = raw_line.strip()
         if not line:
@@ -179,7 +217,7 @@ def apply_submitter_name(payload: dict, submitter_name: str) -> dict:
 
 def normalize_payload(payload: dict) -> dict:
     clean = {key: str(payload.get(key, "")).strip() for key in ALL_FIELDS}
-    clean["exercise_id"] = clean["exercise_id"].upper()
+    clean["exercise_id"] = normalize_exercise_id(clean["exercise_id"])
     return clean
 
 
@@ -189,8 +227,8 @@ def validate_payload(payload: dict) -> list[str]:
         if not payload.get(key, "").strip():
             errors.append(f"Missing required field: {key}")
 
-    if payload.get("exercise_id") and not re.fullmatch(r"E\d+", payload["exercise_id"]):
-        errors.append("exercise_id must look like E1, E2, ...")
+    if payload.get("exercise_id") and not re.fullmatch(r"E\d{2}", payload["exercise_id"]):
+        errors.append("exercise_id must look like E01, E02, ...")
 
     return errors
 
@@ -513,7 +551,7 @@ def interactive_payload(args: argparse.Namespace) -> dict:
     if args.non_interactive or not sys.stdin.isatty() or not missing_any:
         return payload
 
-    payload["exercise_id"] = _prompt("exercise_id", payload["exercise_id"] or "E1")
+    payload["exercise_id"] = _prompt("exercise_id", payload["exercise_id"] or "E01")
     payload["student_name"] = _prompt("student_name", payload["student_name"])
     if not payload["answer"]:
         payload["answer"] = _prompt("answer")
@@ -530,6 +568,11 @@ def build_arg_parser() -> argparse.ArgumentParser:
         "--bootstrap-path",
         default=str(default_bootstrap_path()),
         help="Path to BOOTSTRAP.md used to infer submitter name",
+    )
+    parser.add_argument(
+        "--user-path",
+        default=str(default_user_path()),
+        help="Path to USER.md used as primary submitter profile source",
     )
 
     parser.add_argument("--exercise-id", default="")
@@ -567,7 +610,7 @@ def main() -> int:
         return 2
 
     payload = normalize_payload(interactive_payload(args))
-    inferred_name = args.student_name.strip() or load_submitter_name(Path(args.bootstrap_path))
+    inferred_name = args.student_name.strip() or load_submitter_name(Path(args.user_path)) or load_submitter_name(Path(args.bootstrap_path))
     payload = apply_submitter_name(payload, inferred_name)
     errors = validate_payload(payload)
     if errors:

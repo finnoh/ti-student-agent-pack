@@ -6,27 +6,27 @@ import re
 from pathlib import Path
 
 EXERCISE_TITLES = {
-    "E1": "Setup Jan + OpenRouter + hello world",
-    "E2": "Prompt anatomy in LangChain code",
-    "E3": "Context pipeline with retrieval",
-    "E4": "Tool-calling mini-agent",
-    "E5": "Build + connect tiny MCP tool",
-    "E6": "Memory behavior: session + retrieval",
-    "E7": "Ideation project + idea napkin",
-    "E8": "AI data-collection design memo",
-    "E9": "Evidence paragraph + claim ledger",
+    "E01": "Setup Jan + OpenRouter + hello world",
+    "E02": "Prompt anatomy in LangChain code",
+    "E03": "Context pipeline with retrieval",
+    "E04": "Tool-calling mini-agent",
+    "E05": "Build + connect tiny MCP tool",
+    "E06": "Memory behavior: session + retrieval",
+    "E07": "Ideation project + idea napkin",
+    "E08": "AI data-collection design memo",
+    "E09": "Evidence paragraph + claim ledger",
     "E10": "Reproducible analysis loop",
     "E11": "Issue -> agent -> PR workflow",
     "E12": "Writing + syndication sprint",
 }
 
-EXERCISES = [f"E{i}" for i in range(1, 13)]
+EXERCISES = [f"E{i:02d}" for i in range(1, 13)]
 WIDTH = 74
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Show exercise progress dashboard (not started / started / submitted).")
-    parser.add_argument("--exercise", default="", help="Show only one exercise (e.g., E3)")
+    parser.add_argument("--exercise", default="", help="Show only one exercise (e.g., E03)")
     return parser.parse_args()
 
 
@@ -83,13 +83,31 @@ def has_started(work_file: Path) -> bool:
     return False
 
 
+def normalize_exercise_id(value: str) -> str:
+    ex = value.strip().upper()
+    if not ex.startswith("E"):
+        raise ValueError("exercise id must start with E")
+    number = ex[1:]
+    if not number.isdigit():
+        raise ValueError("exercise id must end with a number")
+    numeric = int(number)
+    if numeric < 1 or numeric > 12:
+        raise ValueError("exercise id must be between E01 and E12")
+    return f"E{numeric:02d}"
+
+
 def _receipt_success_for_exercise(receipt_path: Path, exercise_id: str) -> bool:
     try:
         data = json.loads(receipt_path.read_text(encoding="utf-8"))
     except Exception:
         return False
     submission = data.get("submission", {})
-    if str(submission.get("exercise_id", "")).upper() != exercise_id:
+    raw_exercise = str(submission.get("exercise_id", "")).upper()
+    try:
+        saved_exercise = normalize_exercise_id(raw_exercise)
+    except ValueError:
+        return False
+    if saved_exercise != exercise_id:
         return False
     return bool(data.get("success", False))
 
@@ -112,13 +130,22 @@ def symbol(started: bool, submitted: bool) -> str:
     return ""
 
 
+def exercise_folder(exercise_id: str) -> str:
+    number = int(exercise_id[1:])
+    return f"{number:02d}"
+
+
+def exercise_markdown_path(exercises_dir: Path, exercise_id: str) -> Path:
+    return exercises_dir / exercise_folder(exercise_id) / f"{exercise_id}.md"
+
+
 def render_dashboard(base_dir: Path, selected: str | None = None) -> None:
     exercises_dir = base_dir / "exercises"
     exercises = [selected] if selected else EXERCISES
 
     states: dict[str, tuple[bool, bool]] = {}
     for ex in exercises:
-        started = has_started(exercises_dir / f"{ex}.md")
+        started = has_started(exercise_markdown_path(exercises_dir, ex))
         submitted = has_submitted(base_dir, ex)
         states[ex] = (started, submitted)
 
@@ -146,10 +173,13 @@ def render_dashboard(base_dir: Path, selected: str | None = None) -> None:
 
 def main() -> int:
     args = parse_args()
-    selected = args.exercise.strip().upper()
-    if selected and selected not in EXERCISES:
-        print("ERROR: --exercise must be E1..E12")
-        return 2
+    selected = args.exercise.strip()
+    if selected:
+        try:
+            selected = normalize_exercise_id(selected)
+        except ValueError as exc:
+            print(f"ERROR: {exc}")
+            return 2
 
     base = Path(__file__).resolve().parent.parent
     render_dashboard(base_dir=base, selected=selected or None)
