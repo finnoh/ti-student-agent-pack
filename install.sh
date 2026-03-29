@@ -34,8 +34,12 @@ TI_OPENROUTER_API_KEY="${TI_OPENROUTER_API_KEY:-}"
 TI_CODING_AGENT="${TI_CODING_AGENT:-}"
 TI_INSTALL_OPENCODE="${TI_INSTALL_OPENCODE:-}"
 
+to_lower() {
+    printf '%s' "$1" | tr '[:upper:]' '[:lower:]'
+}
+
 is_noninteractive() {
-    case "${TI_NONINTERACTIVE,,}" in
+    case "$(to_lower "$TI_NONINTERACTIVE")" in
         1|true|yes|y) return 0 ;;
         *) return 1 ;;
     esac
@@ -460,19 +464,24 @@ if ! uv python install 3.11 >/dev/null 2>&1; then
 fi
 
 print_info "Setting up project virtual environment with uv..."
-if uv sync; then
-    USE_UV="true"
-    print_success "uv environment ready (.venv/)"
-    if [ -x ".venv/bin/python" ]; then
-        PYTHON_CMD=".venv/bin/python"
+if [ -f "pyproject.toml" ]; then
+    if uv sync; then
+        USE_UV="true"
+        print_success "uv environment ready (.venv/)"
+        if [ -x ".venv/bin/python" ]; then
+            PYTHON_CMD=".venv/bin/python"
+        fi
+    else
+        if [ -n "$PYTHON_CMD" ]; then
+            print_warning "uv sync failed; continuing with system Python ($PYTHON_CMD)."
+        else
+            print_error "uv sync failed and no usable system Python was found."
+            exit 1
+        fi
     fi
 else
-    if [ -n "$PYTHON_CMD" ]; then
-        print_warning "uv sync failed; continuing with system Python ($PYTHON_CMD)."
-    else
-        print_error "uv sync failed and no usable system Python was found."
-        exit 1
-    fi
+    print_warning "No pyproject.toml found after repository download."
+    print_warning "Skipping uv sync and using system Python when available."
 fi
 
 if [ -z "$PYTHON_CMD" ]; then
