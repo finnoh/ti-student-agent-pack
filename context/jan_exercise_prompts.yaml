@@ -7,16 +7,24 @@ defaults:
   api_key_env_var: OPENROUTER_API_KEY
 prompts:
   E01: |
-    Guide setup in five steps: environment check, API key check, startup evidence,
-    optional hello-world run, submission.
-    Minimum completion is startup check + one Jan response proving agent is live.
-    Ask one concrete action per step and require student evidence before advancing.
+    Guide E01 in five verified subtasks with exactly one active at a time:
+    1) Environment setup check (student-pack install location, startup_check, OPENROUTER_API_KEY in root .env)
+    2) Agent launch check (student can chat with Jan and provide one live response)
+    3) Workspace orientation (open student-agent-pack in VS Code, inspect AGENTS.md + BOOTSTRAP.md + opencode.json)
+    4) Optional hello-world run (tiny CSV -> one summary stat)
+    5) Submission step
+    Before coding steps, run `uv run python tools/list_todo_student.py --exercise E01`
+    and list TODO-STUDENT items as sub-subtasks with line numbers.
+    Ask one concrete action per subtask, require student evidence before advancing,
+    and keep responses concise and executable.
   E02: |
     Guide students through: first LangChain prompt run, country-extraction prompt,
     structured output as Python list, short docs/model orientation, verification, submission.
     Keep CS jargon light and practical.
     Orientation minimum is one practical takeaway (more is optional).
     Optional extension: run Dealer/Gambler/Referee multi-agent blackjack demo.
+    Before coding steps, run `uv run python tools/list_todo_student.py --exercise E02`
+    and list TODO-STUDENT items as sub-subtasks with line numbers.
     If extension is used, require explicit standard rules in output:
     card values (2-10, face=10, Ace=1/11), initial deal (2 player, 2 dealer with one upcard),
     player hit/stand, bust >21, dealer reveals and hits until 17+, blackjack precedence,
@@ -27,6 +35,8 @@ prompts:
     Require one concrete failure fixed by retrieval, one quoted source chunk,
     and one privacy/copyright boundary disclosure.
     Use folder `exercises/03/` and submission draft `exercises/03/E03.md`.
+    First run `uv run python tools/list_todo_student.py --exercise E03`
+    and list TODO-STUDENT items as sub-subtasks with line numbers.
   E04: |
     Build a two-tool integration flow.
     Encourage one existing tool relevant to business/econ research (arXiv, Zotero, etc.).
@@ -34,16 +44,22 @@ prompts:
     Confirm tool signatures first, run one query that needs both tools,
     verify output plausibility, and capture one failure mode.
     Use `exercises/04/tool_agent.py` and trace notes in `exercises/04/tool_trace_notes.md`.
+    First run `uv run python tools/list_todo_student.py --exercise E04`
+    and list TODO-STUDENT items as sub-subtasks with line numbers.
   E05: |
-    Build one tiny custom tool, define input/output contract, wire it,
-    run one success case, one sanity check, and one explicit error path.
+    Connect a LangChain agent to MCP time server (`mcp-server-time`) and run
+    one success case, one sanity check, and one explicit error path.
     Keep implementation minimal and debuggable.
-    Use `exercises/05/tiny_tool.py` and document checks in `exercises/05/sanity_notes.md`.
+    Use `exercises/05/mcp_tool.py` and document checks in `exercises/05/sanity_notes.md`.
+    First run `uv run python tools/list_todo_student.py --exercise E05`
+    and list TODO-STUDENT items as sub-subtasks with line numbers.
   E06: |
     Separate short-term memory and retriever-backed memory.
     Require one remembered preference, one retrieved project fact, and one risk note.
     Align AGENTS.md, MEMORY.md, and PROJECT_BACKGROUND.md behavior.
     Use `exercises/06/memory_policy.md` and `exercises/06/memory_demo.py`.
+    First run `uv run python tools/list_todo_student.py --exercise E06`
+    and list TODO-STUDENT items as sub-subtasks with line numbers.
   E07: |
     Start with researcher context (methods, data access, constraints).
     Use explore -> select -> immerse -> question -> idea napkin.

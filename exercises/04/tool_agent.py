@@ -40,6 +40,20 @@ def parse_values(question: str) -> list[float]:
     return [float(x.strip()) for x in match.group(1).split(",") if x.strip()]
 
 
+def parse_region_code(question: str) -> str:
+    match = re.search(r"region_code\s*=\s*([A-Za-z])", question)
+    return match.group(1).upper() if match else ""
+
+
+def add_plausibility_trace(trace: list[str], values: list[float], average: str) -> None:
+    if values and average.replace(".", "", 1).isdigit():
+        manual = sum(values) / len(values)
+        ok = abs(float(average) - manual) < 0.01
+        trace.append(f"plausibility_check -> {'pass' if ok else 'fail'} (manual={manual:.2f})")
+    else:
+        trace.append("plausibility_check -> skipped")
+
+
 def run(question: str) -> tuple[str, list[str], str]:
     model = build_live_model(temperature=0.0).bind_tools([lookup_label_tool, calc_average_tool])
     system = SystemMessage(
@@ -52,8 +66,7 @@ def run(question: str) -> tuple[str, list[str], str]:
     try:
         first = model.invoke([system, user])
     except Exception:
-        code_match = re.search(r"region_code\s*=\s*([A-Za-z])", question)
-        code = code_match.group(1).upper() if code_match else ""
+        code = parse_region_code(question)
         region = lookup_label_tool.invoke({"code": code})
         values = parse_values(question)
         average = calc_average_tool.invoke({"values": values})
@@ -61,12 +74,7 @@ def run(question: str) -> tuple[str, list[str], str]:
             f"tool_call_1 -> lookup_label_tool(args={{'code': '{code}'}}) => {region}",
             f"tool_call_2 -> calc_average_tool(args={{'values': {values}}}) => {average}",
         ]
-        if values and average.replace(".", "", 1).isdigit():
-            manual = sum(values) / len(values)
-            ok = abs(float(average) - manual) < 0.01
-            trace.append(f"plausibility_check -> {'pass' if ok else 'fail'} (manual={manual:.2f})")
-        else:
-            trace.append("plausibility_check -> skipped")
+        add_plausibility_trace(trace, values, average)
         return region, trace, f"Region={region}; average={average}."
 
     if not first.tool_calls:
@@ -98,13 +106,7 @@ def run(question: str) -> tuple[str, list[str], str]:
     except Exception:
         final_answer = f"Region={region}; average={average}."
 
-    values = parse_values(question)
-    if values and average.replace(".", "", 1).isdigit():
-        manual = sum(values) / len(values)
-        ok = abs(float(average) - manual) < 0.01
-        trace.append(f"plausibility_check -> {'pass' if ok else 'fail'} (manual={manual:.2f})")
-    else:
-        trace.append("plausibility_check -> skipped")
+    add_plausibility_trace(trace, parse_values(question), average)
 
     return region, trace, final_answer
 

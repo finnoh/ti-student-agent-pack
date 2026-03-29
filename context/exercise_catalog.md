@@ -3,8 +3,8 @@
 Use this catalog for fast exercise routing and concise coaching.
 
 ## E01 - Setup Jan + OpenRouter + hello world
-- Objective: Get setup operational with a minimum viable check, then run optional hello-world coding if time allows.
-- Deliverable: Minimum startup evidence + Jan response; full submission adds hello-world run, manual verification, and customization note.
+- Objective: Get the local Jan environment working end-to-end (install, API key, launch, and workspace orientation), then run optional hello-world coding if time allows.
+- Deliverable: Minimum startup evidence + one live Jan response; full submission adds a tiny CSV hello-world run, manual verification, and a short Jan customization note.
 
 ## E02 - Prompt anatomy in LangChain code
 - Objective: Turn a noisy extraction task into structured Python output and document one model/docs rationale.

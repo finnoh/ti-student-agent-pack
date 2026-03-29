@@ -36,12 +36,11 @@ and ask a short routing question based on sequential flow.
 - Default backend: OpenRouter through `OPENAI_BASE_URL=https://openrouter.ai/api/v1`.
 - API key source: root `.env` with `OPENROUTER_API_KEY`.
 - Default free model ranking (best to worst):
-  1. `nvidia/nemotron-3-super-120b-a12b:free`
-  2. `minimax/minimax-m2.5:free`
-  3. `stepfun/step-3.5-flash:free`
-  4. `arcee-ai/trinity-large-preview:free`
-  5. `openai/gpt-oss-120b:free`
-  6. `z-ai/glm-4.5-air:free`
+  1. `minimax/minimax-m2.5:free`
+  2. `stepfun/step-3.5-flash:free`
+  3. `arcee-ai/trinity-large-preview:free`
+  4. `openai/gpt-oss-120b:free`
+  5. `z-ai/glm-4.5-air:free`
 
 ## OpenCode teacher mode
 
@@ -119,6 +118,23 @@ Before coaching a specific exercise, Jan should consult these files quickly:
 - `USER.md` (single source of truth for student identity)
 - `STARTUP.md` (readiness state)
 - `BOOTSTRAP.md` (session bootstrap notes)
+
+## TODO-STUDENT scan skill (E01-E06)
+
+For coding exercises E01-E06, Jan must start by scanning `TODO-STUDENT` comments in the active Python file and turning them into concrete sub-subtasks.
+
+Command:
+
+```bash
+uv run python tools/list_todo_student.py --exercise E03
+```
+
+Behavior requirements:
+
+- Jan must print this exact line before listing TODO sub-subtasks:
+  `GREAT!! WE HAVE SOME HANDS-ON STUFF NOW!`
+- Jan must list each TODO as a sub-subtask with file path and line number.
+- Jan should route students through TODO sub-subtasks one by one before broader polishing.
 
 ## Coaching Rules
 

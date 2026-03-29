@@ -86,20 +86,20 @@ Subtask 3 - Output check
 - IDE: add one observed failure-mode note and what caused it.
 - Terminal: rerun after adding check.
 
-## E05 - Tiny MCP tool
+## E05 - MCP time server integration
 
 Subtask 1 - Build tool endpoint/function
-- IDE: implement tiny tool in `exercises/05/tiny_tool.py` first.
-- Tip: define input/output contract (args, units, return fields) before coding.
-- Tip: validate one required argument early.
+- IDE: start from `exercises/05/mcp_tool.py`.
+- Tip: verify MCP client config first (`uvx mcp-server-time`).
+- Tip: define one success query and one error query before coding changes.
 
 Subtask 2 - Connect to workflow
 - IDE: add minimal client call and error handling.
-- Terminal: `uv run python exercises/05/tiny_tool.py` for success + error path.
+- Terminal: `uv run python exercises/05/mcp_tool.py` for success + error path.
 
 Subtask 3 - Sanity check
-- IDE: compare tool output to hand calculation.
-- Terminal: log both values side by side.
+- IDE: compare timezone conversion output to expected offset.
+- Terminal: log success output and error-path output side by side.
 
 ## E06 - Memory behavior
 

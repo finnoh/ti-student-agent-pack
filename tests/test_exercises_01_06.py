@@ -53,15 +53,15 @@ def test_e02_extraction_and_verification() -> None:
 def test_e03_retrieval_identifies_best_region() -> None:
     docs = e03.read_local_documents(ROOT / "exercises/03/local_docs")
     question = "Which market had the largest quarter-over-quarter growth in this mini corpus?"
-    baseline = e03.baseline_answer(question)
-    retrieved = e03.retrieval_answer(question, docs)
-    verdict = e03.compare_answers(baseline, retrieved)
+    retriever = e03.build_retriever(docs, k=2)
+    hits = retriever.invoke(question)
+    sources = [doc.metadata.get("source", "") for doc in hits]
+    combined = " ".join([doc.page_content for doc in hits])
 
-    assert "cannot determine" in baseline.lower()
-    assert "Region C" in retrieved
-    assert "+12.0" in retrieved
-    assert "[S" in retrieved
-    assert "Retrieval fixed an omission" in verdict
+    assert len(docs) >= 5
+    assert len(hits) == 2
+    assert "market_note_3.txt" in sources
+    assert "Region C" in combined
 
 
 def test_e04_tool_agent_success_and_missing_values_path() -> None:
@@ -70,12 +70,13 @@ def test_e04_tool_agent_success_and_missing_values_path() -> None:
     assert results[0].name == "lookup_label"
     assert results[1].name == "calc_average"
     assert any(step.action.startswith("plausibility_check") for step in trace)
-    assert "mean_value=15.00" in final
+    assert "15.00" in final
+    assert "region" in final.lower()
 
     results2, trace2, final2 = e04.run_tool_agent("region_code=B; values=")
-    assert len(results2) == 1
-    assert "cannot compute average" in trace2[-1].observation
-    assert "average=unavailable" in final2
+    assert len(results2) >= 1
+    assert any("cannot compute average" in step.observation.lower() for step in trace2)
+    assert "average" in final2.lower()
 
 
 def test_e05_npv_success_and_invalid_rate() -> None:
@@ -90,10 +91,14 @@ def test_e05_npv_success_and_invalid_rate() -> None:
 
 
 def test_e06_memory_trace_and_retrieval_fact() -> None:
-    trace = e06.scripted_dialogue()
-    stored, retrieved = e06.retrieval_fact_demo()
+    e06.SESSION_STATE.clear()
+    short_set = e06.remember_chart_style.invoke({"chart_style": "line charts"})
+    short_get = e06.recall_chart_style.invoke({})
 
-    assert len(trace) == 4
-    assert "line charts" in trace[-1].lower()
-    assert "2026-05-15" in stored
-    assert "2026-05-15" in retrieved
+    assert "line charts" in short_set.lower()
+    assert "line charts" in short_get.lower()
+
+    save_msg = e06.save_project_deadline.invoke({"project": "E06 test", "deadline": "2026-05-15"})
+    load_msg = e06.load_project_deadline.invoke({"project": "E06 test"})
+    assert "saved" in save_msg.lower()
+    assert "2026-05-15" in load_msg

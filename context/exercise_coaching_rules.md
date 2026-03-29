@@ -9,6 +9,8 @@ Use `context/jan_exercise_prompts.yaml` for the exercise-level coaching prompt p
 - Evidence can be pasted terminal output, short screenshot summary, or copied code snippet.
 - If the student is stuck, provide 1-3 hints from `context/subtask_tips.md` before escalating.
 - For LangChain coding steps, include 1-3 relevant LangChain documentation links with your guidance.
+- For E01-E06 coding tasks, first run `uv run python tools/list_todo_student.py --exercise E##` and list TODOs as sub-subtasks with line numbers.
+- Start TODO listing with: `GREAT!! WE HAVE SOME HANDS-ON STUFF NOW!`
 
 ## E01
 
