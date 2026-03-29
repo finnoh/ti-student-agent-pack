@@ -19,9 +19,9 @@ Use this catalog for fast exercise routing and concise coaching.
 - Objective: Integrate at least one existing tool and define a no-auth local fallback for a two-tool, multi-step research question.
 - Deliverable: Tool trace proving tool selection, one verification check, and one failure-mode note.
 
-## E05 - Build and connect tiny MCP tool
-- Objective: Build one tiny custom tool, define input/output contract, and wire it into an agent workflow.
-- Deliverable: Input -> tool output -> agent explanation demo with one sanity check and one handled error case.
+## E05 - Connect LangChain agent to MCP time server
+- Objective: Connect a LangChain agent to `mcp-server-time`, run one success case, and inspect one handled error path.
+- Deliverable: MCP call trace with success + error-path evidence, one sanity check, and one TODO-STUDENT change note.
 
 ## E06 - Memory behavior: session + retrieval
 - Objective: Define memory policy and show short-term vs long-term retrieval behavior from agent interaction.

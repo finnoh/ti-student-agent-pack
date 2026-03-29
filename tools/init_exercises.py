@@ -29,10 +29,10 @@ EXERCISE_META = {
         "failure_risk": "Agent answers directly without actually using both tools.",
     },
     "E05": {
-        "title": "Build and connect a tiny MCP tool",
-        "objective": "Implement one tiny custom tool, define I/O contract, and connect it to a simple workflow.",
-        "deliverable": "Tool demo (input -> output -> explanation) plus sanity check and handled error case.",
-        "failure_risk": "Tool interface is unclear or lacks basic argument validation.",
+        "title": "Connect LangChain agent to MCP time server",
+        "objective": "Connect a LangChain agent to mcp-server-time, run one successful call, and capture one handled error path.",
+        "deliverable": "MCP call demo (success + error path) plus one sanity check and one TODO-STUDENT experiment note.",
+        "failure_risk": "MCP server runtime is unavailable or error-path evidence is missing.",
     },
     "E06": {
         "title": "Memory behavior: session + retrieval",

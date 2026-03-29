@@ -45,9 +45,9 @@
 - Goal: integrate existing tools into a two-tool workflow with no-auth fallback.
 - Deliverable: tool trace + verification check + failure-mode note + fallback plan.
 
-### E05 - Build and connect tiny MCP tool
-- Goal: build one tiny custom tool and wire it.
-- Deliverable: input/output demo + sanity check + handled error path.
+### E05 - Connect LangChain agent to MCP time server
+- Goal: connect LangChain to `mcp-server-time` and run one success + one error path.
+- Deliverable: MCP tool-call trace + sanity check + handled error path.
 
 ### E06 - Memory behavior: session + retrieval
 - Goal: define memory policy and separate session vs retrieval memory.

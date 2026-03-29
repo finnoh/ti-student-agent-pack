@@ -10,7 +10,7 @@ EXERCISE_TITLES = {
     "E02": "Prompt anatomy in LangChain code",
     "E03": "Context pipeline with retrieval",
     "E04": "Tool-calling mini-agent",
-    "E05": "Build + connect tiny MCP tool",
+    "E05": "Connect LangChain agent to MCP time server",
     "E06": "Memory behavior: session + retrieval",
     "E07": "Ideation project + idea napkin",
     "E08": "AI data-collection design memo",

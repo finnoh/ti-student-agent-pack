@@ -22,7 +22,7 @@ e01 = load_module("exercises/01/hello_world.py", "e01_hello_world")
 e02 = load_module("exercises/02/prompt_lab.py", "e02_prompt_lab")
 e03 = load_module("exercises/03/retrieval_ab.py", "e03_retrieval_ab")
 e04 = load_module("exercises/04/tool_agent.py", "e04_tool_agent")
-e05 = load_module("exercises/05/tiny_tool.py", "e05_tiny_tool")
+e05 = load_module("exercises/05/mcp_tool.py", "e05_mcp_tool")
 e06 = load_module("exercises/06/memory_demo.py", "e06_memory_demo")
 
 
@@ -79,15 +79,10 @@ def test_e04_tool_agent_success_and_missing_values_path() -> None:
     assert "average" in final2.lower()
 
 
-def test_e05_npv_success_and_invalid_rate() -> None:
-    success = e05.simple_npv([100.0, 120.0, 140.0], 0.10)
-    invalid = e05.simple_npv([100.0, 120.0, 140.0], -0.10)
-
-    assert success.ok is True
-    assert success.value is not None
-    assert round(success.value, 2) == 295.27
-    assert invalid.ok is False
-    assert invalid.value is None
+def test_e05_helpers_for_mcp_output() -> None:
+    mock = {"messages": [type("M", (), {"type": "tool", "content": "ok"})(), type("M", (), {"type": "ai", "content": "Done"})()]}
+    assert e05.count_tool_messages(mock) == 1
+    assert e05.extract_final_text(mock) == "Done"
 
 
 def test_e06_memory_trace_and_retrieval_fact() -> None:

@@ -88,7 +88,7 @@ E01 Setup Jan + OpenRouter + hello world
 E02 Prompt anatomy in LangChain code
 E03 Context pipeline with retrieval (A/B)
 E04 Tool integration mini-agent
-E05 Build and connect tiny MCP tool
+E05 Connect LangChain agent to MCP time server
 E06 Memory behavior: session + retrieval
 E07 Ideation scorecard + idea napkin
 E08 AI data-collection design memo
