@@ -16,9 +16,8 @@ uv run python exercises/03/retrieval_ab.py
 
 ## Local docs
 
-- `exercises/03/local_docs/market_note_1.txt`
-- `exercises/03/local_docs/market_note_2.txt`
-- `exercises/03/local_docs/market_note_3.txt`
+- `exercises/03/local_docs/market_note_1.txt` to `market_note_5.txt`
+- Corpus intentionally mixes relevant and irrelevant notes for realistic retrieval.
 
 ## Submission draft
 

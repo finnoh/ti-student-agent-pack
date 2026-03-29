@@ -1,67 +1,53 @@
 #!/usr/bin/env python3
 
-# Imports
 import csv
-import json
-import os
 from pathlib import Path
+import sys
+
+ROOT = Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:
+    sys.path.append(str(ROOT))
+
+from live_llm import build_live_model, to_text
 
 
-# Functions
-def load_rows(csv_path: Path) -> list[dict]:
-    with csv_path.open("r", encoding="utf-8", newline="") as handle:
-        return list(csv.DictReader(handle))
+def load_incomes(csv_path: Path) -> list[float]:
+    with csv_path.open("r", encoding="utf-8", newline="") as f:
+        rows = list(csv.DictReader(f))
+    return [float(r["income"]) for r in rows]
 
-
-def mean_income(rows: list[dict]) -> float:
-    values = [float(row["income"]) for row in rows]
-    return sum(values) / len(values)
-
-
-def try_langchain_response(rows: list[dict], mean_value: float) -> str:
-    try:
-        from langchain_core.prompts import ChatPromptTemplate
-        from langchain_openai import ChatOpenAI
-    except Exception:
-        return "LangChain packages not installed. Using local fallback output."
-
-    api_key = os.environ.get("OPENROUTER_API_KEY", "").strip() or os.environ.get("OPENAI_API_KEY", "").strip()
-    if not api_key:
-        return "OPENROUTER_API_KEY is missing. Using local fallback output."
-
-    base_url = os.environ.get("OPENAI_BASE_URL", "https://openrouter.ai/api/v1")
-    model = os.environ.get("OPENAI_CHAT_MODEL", os.environ.get("OPENROUTER_DEFAULT_MODEL", "nvidia/nemotron-3-super-120b-a12b:free"))
-
-    llm = ChatOpenAI(api_key=api_key, base_url=base_url, model=model, temperature=0)
-    prompt = ChatPromptTemplate.from_messages(
-        [
-            (
-                "system",
-                "You are a careful data assistant. Return strict JSON with keys task, rows, mean_income, verification_note.",
-            ),
-            (
-                "human",
-                "Task: summarize this tiny CSV. Data: {rows}. Precomputed mean_income: {mean_value}.",
-            ),
-        ]
-    )
-    chain = prompt | llm
-    result = chain.invoke({"rows": json.dumps(rows), "mean_value": mean_value})
-    return str(getattr(result, "content", result)).strip()
-
+def load_names(csv_path: Path) -> list[str]:
+    with csv_path.open("r", encoding="utf-8", newline="") as f:
+        rows = list(csv.DictReader(f))
+    return [r["group_id"] for r in rows]
 
 def main() -> int:
-    csv_path = Path(__file__).resolve().parent / "data" / "tiny.csv"
-    rows = load_rows(csv_path)
-    mean_value = mean_income(rows)
+    incomes = load_incomes(Path(__file__).resolve().parent / "data" / "tiny.csv")
+    names = load_names(Path(__file__).resolve().parent / "data" / "tiny.csv")
+    mean_income = sum(incomes) / len(incomes)
 
-    print(f"rows={len(rows)}")
-    print(f"mean_income={mean_value:.2f}")
+    model = build_live_model(temperature=0.0)
+    # TODO-STUDENT: Add another entry to the json, asking to return female sounding names from tiny.csv
+    prompt = (
+        "Return only compact JSON with keys task, rows, mean_income, verification_note. Also return a list of female sounding names from tiny.csv"
+        f"\nrows={len(incomes)}"
+        f"\nmean_income={mean_income:.2f}"
+        "\nverification_note: must mention manual cross-check from on whether the number of observations and mean income matches tiny.csv."
+        "\n female_names: should be list of all female sounding names in tiny.csv"
+    )
+
+    print(f"rows={len(incomes)}")
+    print(f"mean_income={mean_income:.2f}")
     print("agent_output=")
-    print(try_langchain_response(rows=rows, mean_value=mean_value))
+    try:
+        print(to_text(model.invoke(prompt)))
+    except Exception:
+        print(
+            '{"task":"(fallback) Calculate mean income","rows":%d,"mean_income":%.2f,'
+            '"verification_note":"Manual cross-check from tiny.csv"}' % (len(incomes), mean_income)
+        )
     return 0
 
 
-# Code
 if __name__ == "__main__":
     raise SystemExit(main())

@@ -1,0 +1,2 @@
+Compliance bulletin: retention windows changed for archival systems.
+This document discusses governance controls and audit workflow only.
